@@ -1,10 +1,11 @@
 ---
 phase: 15
-title: "Browser Extension"
-status: pending
+title: Browser Extension
+status: completed
 priority: P3
-effort: "8h"
-dependencies: [1]
+effort: 8h
+dependencies:
+  - 1
 ---
 
 # Phase 15: Browser Extension

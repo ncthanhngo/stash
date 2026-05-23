@@ -199,6 +199,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             menuBarController?.togglePopover()
         case .togglePrivacyMode:
             togglePrivacyMode()
+        case .captureScreenshotCrop:
+            ScreenshotService.captureInteractiveCrop()
         }
     }
 

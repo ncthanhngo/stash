@@ -3,4 +3,5 @@ enum HotkeyAction: Equatable {
     case pasteLatestPlainText
     case togglePopover
     case togglePrivacyMode
+    case captureScreenshotCrop
 }

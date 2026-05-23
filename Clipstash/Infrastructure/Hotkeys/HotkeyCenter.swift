@@ -40,6 +40,10 @@ final class HotkeyCenter {
         privacy.keyDownHandler = { [weak self] in self?.handler(.togglePrivacyMode) }
         hotKeys.append(privacy)
 
+        let crop = HotKey(key: .s, modifiers: [.command, .shift])
+        crop.keyDownHandler = { [weak self] in self?.handler(.captureScreenshotCrop) }
+        hotKeys.append(crop)
+
         Self.log.info("registered \(self.hotKeys.count, privacy: .public) hotkeys")
     }
 
