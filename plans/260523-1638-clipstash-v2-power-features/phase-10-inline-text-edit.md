@@ -1,9 +1,9 @@
 ---
 phase: 10
-title: "Inline Text Edit"
-status: pending
+title: Inline Text Edit
+status: completed
 priority: P2
-effort: "2h"
+effort: 2h
 dependencies: []
 ---
 

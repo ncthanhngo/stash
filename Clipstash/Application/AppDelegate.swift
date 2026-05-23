@@ -174,7 +174,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
             if let template = item.pinnedTemplate, !template.isEmpty {
-                try engine.pasteRenderedTemplate(template)
+                let labels = TemplateRenderer.promptLabels(in: template)
+                if labels.isEmpty {
+                    try engine.pasteRenderedTemplate(template, promptAnswers: [:])
+                } else {
+                    PromptSheet.present(labels: labels) { [weak engine] answers in
+                        try? engine?.pasteRenderedTemplate(template, promptAnswers: answers)
+                    }
+                }
             } else {
                 try engine.paste(item, mode: .normal)
             }

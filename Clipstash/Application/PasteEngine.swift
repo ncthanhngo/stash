@@ -2,7 +2,7 @@ import Foundation
 
 protocol PasteEngine: AnyObject {
     func paste(_ item: ClipboardItem, mode: PasteMode) throws
-    func pasteRenderedTemplate(_ template: String) throws
+    func pasteRenderedTemplate(_ template: String, promptAnswers: [String: String]) throws
 }
 
 enum PasteMode: Equatable {

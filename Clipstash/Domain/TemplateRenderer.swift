@@ -4,6 +4,7 @@ struct RenderContext {
     var date: Date = Date()
     var clipboard: String?
     var uuidProvider: () -> String = { UUID().uuidString }
+    var promptAnswers: [String: String] = [:]
 }
 
 struct RenderResult: Equatable {
@@ -42,9 +43,25 @@ enum TemplateRenderer {
             return context.clipboard ?? ""
         case "uuid":
             return context.uuidProvider()
+        case "prompt":
+            return context.promptAnswers[arg ?? ""] ?? ""
         default:
             return arg.map { "{{\(name):\($0)}}" } ?? "{{\(name)}}"
         }
+    }
+
+    static func promptLabels(in template: String) -> [String] {
+        var labels: [String] = []
+        var seen = Set<String>()
+        for token in TemplateTokenizer.tokenize(template) {
+            if case .variable(let name, let arg) = token, name == "prompt", let label = arg {
+                if !seen.contains(label) {
+                    seen.insert(label)
+                    labels.append(label)
+                }
+            }
+        }
+        return labels
     }
 
     private static func format(_ date: Date, pattern: String) -> String {

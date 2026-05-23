@@ -43,9 +43,13 @@ final class SystemPasteEngine: PasteEngine {
         }
     }
 
-    func pasteRenderedTemplate(_ template: String) throws {
+    func pasteRenderedTemplate(_ template: String, promptAnswers: [String: String] = [:]) throws {
         let clipboardText = pasteboard.string(forType: .string)
-        let context = RenderContext(date: Date(), clipboard: clipboardText)
+        let context = RenderContext(
+            date: Date(),
+            clipboard: clipboardText,
+            promptAnswers: promptAnswers
+        )
         let result = TemplateRenderer.render(template, context: context)
 
         let snapshot = restorePrevious ? snapshotPasteboard() : nil
