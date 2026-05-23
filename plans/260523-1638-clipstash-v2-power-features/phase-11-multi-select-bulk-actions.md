@@ -1,9 +1,9 @@
 ---
 phase: 11
-title: "Multi-Select Bulk Actions"
-status: pending
+title: Multi-Select Bulk Actions
+status: completed
 priority: P2
-effort: "3h"
+effort: 3h
 dependencies: []
 ---
 

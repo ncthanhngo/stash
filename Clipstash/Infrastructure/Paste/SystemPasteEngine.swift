@@ -13,18 +13,23 @@ final class SystemPasteEngine: PasteEngine {
     private let watcher: ClipboardWatcher
     private let restorePrevious: Bool
     private let restoreDelay: TimeInterval
+    private let smartPaste: SmartPasteRegistry
 
     init(
         pasteboard: NSPasteboard = .general,
         watcher: ClipboardWatcher,
         restorePrevious: Bool = true,
-        restoreDelay: TimeInterval = 0.3
+        restoreDelay: TimeInterval = 0.3,
+        smartPaste: SmartPasteRegistry = SmartPasteRegistry()
     ) {
         self.pasteboard = pasteboard
         self.watcher = watcher
         self.restorePrevious = restorePrevious
         self.restoreDelay = restoreDelay
+        self.smartPaste = smartPaste
     }
+
+    var smartPasteRegistry: SmartPasteRegistry { smartPaste }
 
     func paste(_ item: ClipboardItem, mode: PasteMode) throws {
         let snapshot = restorePrevious ? snapshotPasteboard() : nil
@@ -90,7 +95,9 @@ final class SystemPasteEngine: PasteEngine {
     }
 
     private func write(_ item: ClipboardItem, mode: PasteMode) {
-        switch item.content {
+        let frontmostID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
+        let content = smartPaste.apply(content: item.content, frontmostBundleID: frontmostID)
+        switch content {
         case .text(let s):
             pasteboard.setString(s, forType: .string)
         case .image(let data, _):
