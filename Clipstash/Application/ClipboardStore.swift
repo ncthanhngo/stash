@@ -87,4 +87,22 @@ final class ClipboardStore: ObservableObject {
             Self.log.error("setTemplate failed: \(String(describing: error), privacy: .public)")
         }
     }
+
+    func saveTextToSlot(slot: Int, text: String) {
+        do {
+            try repository.unpin(slot: slot)
+            let content = CapturedContent.text(text)
+            let item = ClipboardItem(
+                content: content,
+                contentHash: ContentHasher.hash(content),
+                sourceAppName: "Clipstash",
+                isPinned: true,
+                pinnedSlot: slot
+            )
+            try repository.insert(item)
+            refresh()
+        } catch {
+            Self.log.error("saveTextToSlot failed: \(String(describing: error), privacy: .public)")
+        }
+    }
 }

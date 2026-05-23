@@ -1,10 +1,18 @@
 ---
 phase: 9
-title: "Tests & Polish"
-status: pending
+title: Tests & Polish
+status: completed
 priority: P2
-effort: "5h"
-dependencies: [1, 2, 3, 4, 5, 6, 7, 8]
+effort: 5h
+dependencies:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
 ---
 
 # Phase 9: Tests & Polish

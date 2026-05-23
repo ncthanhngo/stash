@@ -6,13 +6,15 @@ struct ClipboardPopoverView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            PinnedSlotsBar(store: store)
+            Divider()
             searchField
             Divider()
             content
             Divider()
             footer
         }
-        .frame(width: 420, height: 520)
+        .frame(width: 420, height: 560)
         .onAppear { store.refresh() }
     }
 

@@ -4,7 +4,7 @@ description: >-
   Local-first menu-bar clipboard manager: history (text+images), 9 pinned slots
   (Option+1..9), fuzzy search, plain-text paste, snippet variables, privacy
   exclusions
-status: pending
+status: completed
 priority: P2
 branch: ''
 tags:
@@ -44,7 +44,7 @@ Native macOS menu-bar app that captures clipboard history (text + images), expos
 | 6 | [Fuzzy Search](./phase-06-fuzzy-search.md) | Completed |
 | 7 | [Snippet Variables](./phase-07-snippet-variables.md) | Completed |
 | 8 | [Privacy Exclusion](./phase-08-privacy-exclusion.md) | Completed |
-| 9 | [Tests & Polish](./phase-09-tests-polish.md) | Pending |
+| 9 | [Tests & Polish](./phase-09-tests-polish.md) | Completed |
 | 10 | [Pinned-Slot Folder Sync](./phase-10-pinned-folder-sync.md) | Completed |
 
 ## Phase Dependency Graph

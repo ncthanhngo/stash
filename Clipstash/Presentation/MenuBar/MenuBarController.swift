@@ -15,7 +15,7 @@ final class MenuBarController {
 
         let popover = NSPopover()
         popover.behavior = .transient
-        popover.contentSize = NSSize(width: 420, height: 520)
+        popover.contentSize = NSSize(width: 420, height: 560)
         popover.contentViewController = NSHostingController(
             rootView: ClipboardPopoverView(store: store)
         )

@@ -131,7 +131,7 @@ final class PinnedFolderSync: ObservableObject {
     }
 
     private func applyRemoteSlot(_ remote: RemoteSlot) throws {
-        let hash = SystemPasteboard.hash(remote.content)
+        let hash = ContentHasher.hash(remote.content)
         let item = ClipboardItem(
             content: remote.content,
             contentHash: hash,

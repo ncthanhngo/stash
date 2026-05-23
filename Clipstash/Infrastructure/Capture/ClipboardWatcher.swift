@@ -82,7 +82,7 @@ final class ClipboardWatcher {
             Self.log.warning("snapshot empty at changeCount=\(changeCount, privacy: .public)")
             return
         }
-        let hash = SystemPasteboard.hash(payload.content)
+        let hash = ContentHasher.hash(payload.content)
         guard hash != lastHash else { return }
         lastHash = hash
 
