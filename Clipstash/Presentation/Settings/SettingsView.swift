@@ -43,6 +43,12 @@ struct SettingsView: View {
                     .foregroundColor(.secondary)
                 Button("Open Snippets") { openSnippets() }
             }
+            Section("Browser extension") {
+                Text("Right-click selected text in Chrome/Brave/Edge → Send to Clipstash slot. Load the unpacked extension from the browser-extension/ folder in this repo.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Button("Reveal extension folder in Finder") { revealExtensionFolder() }
+            }
         }
         .formStyle(.grouped)
     }
@@ -53,6 +59,20 @@ struct SettingsView: View {
 
     private func openSnippets() {
         NotificationCenter.default.post(name: .clipstashOpenSnippets, object: nil)
+    }
+
+    private func revealExtensionFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.allowsMultipleSelection = false
+        panel.message = "Locate the Clipstash repo's browser-extension folder"
+        panel.prompt = "Reveal"
+        if panel.runModal() == .OK, let url = panel.url {
+            let ext = url.appendingPathComponent("browser-extension")
+            let target = FileManager.default.fileExists(atPath: ext.path) ? ext : url
+            NSWorkspace.shared.activateFileViewerSelecting([target])
+        }
     }
 
     private var storageTab: some View {

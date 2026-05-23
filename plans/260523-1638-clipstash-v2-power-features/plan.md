@@ -46,7 +46,7 @@ Builds on the shipped MVP (`260523-1357-macos-clipboard-manager-mvp/`). Adds 15 
 | 11 | [Multi-Select Bulk Actions](./phase-11-multi-select-bulk-actions.md) | Pending | Completed |
 | 12 | [Frequency Analytics](./phase-12-frequency-analytics.md) | Pending | Completed |
 | 13 | [Smart Paste Detection](./phase-13-smart-paste-detection.md) | Pending | Completed |
-| 14 | [Code Syntax Highlighting](./phase-14-code-syntax-highlighting.md) | Pending | 5h |
+| 14 | [Code Syntax Highlighting](./phase-14-code-syntax-highlighting.md) | Pending | Completed |
 | 15 | [Browser Extension](./phase-15-browser-extension.md) | Pending | 8h |
 
 ## Phase Dependency Graph

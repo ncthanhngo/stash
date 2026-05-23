@@ -1,6 +1,6 @@
 # Clipstash
 
-Local-first macOS menu-bar clipboard manager.
+Local-first macOS menu-bar clipboard manager with snippet library, Touch-ID vault, and browser extension.
 
 - 9 pinned slots via `Option+1..9`
 - Clipboard history (text + images)
@@ -40,6 +40,21 @@ Local-first. No backend, no telemetry, no login.
 - Clipboard content never leaves the Mac unless you opt into Phase 10 sync (writes pinned slots as files into a cloud-synced folder of your choice).
 - Sandbox is OFF (required for global hotkeys + paste injection).
 - See [`CLAUDE.md`](CLAUDE.md) §7 for the full privacy charter.
+
+## Browser extension (optional)
+
+A Chromium-family extension adds "Send to Clipstash" to the right-click menu. See [`browser-extension/README.md`](browser-extension/README.md) for install steps. Works in Chrome, Brave, Edge.
+
+## CLI helper
+
+```bash
+sudo ln -s /path/to/scripts/clipstash /usr/local/bin/clipstash
+clipstash paste 3                       # paste slot 3
+clipstash add "Hello"                   # add text to history
+clipstash add "API_KEY=xxx" --slot 7    # pin to slot 7
+```
+
+Or use the URL scheme directly: `open "clipstash://paste/3"`.
 
 ## License
 

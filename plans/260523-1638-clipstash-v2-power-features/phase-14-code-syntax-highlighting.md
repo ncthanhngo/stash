@@ -1,9 +1,9 @@
 ---
 phase: 14
-title: "Code Syntax Highlighting"
-status: pending
+title: Code Syntax Highlighting
+status: completed
 priority: P3
-effort: "5h"
+effort: 5h
 dependencies: []
 ---
 
