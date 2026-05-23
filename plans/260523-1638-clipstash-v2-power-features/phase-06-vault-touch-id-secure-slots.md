@@ -1,9 +1,9 @@
 ---
 phase: 6
-title: "Vault — Touch ID Secure Slots"
-status: pending
+title: Vault — Touch ID Secure Slots
+status: completed
 priority: P1
-effort: "5h"
+effort: 5h
 dependencies: []
 ---
 

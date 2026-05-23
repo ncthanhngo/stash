@@ -37,12 +37,22 @@ struct SettingsView: View {
                     .foregroundColor(.secondary)
                 Button("Open Vault") { openVault() }
             }
+            Section("Snippet library") {
+                Text("Folders + reusable snippets with optional template variables. Paste from the Snippets window.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Button("Open Snippets") { openSnippets() }
+            }
         }
         .formStyle(.grouped)
     }
 
     private func openVault() {
         NotificationCenter.default.post(name: .clipstashOpenVault, object: nil)
+    }
+
+    private func openSnippets() {
+        NotificationCenter.default.post(name: .clipstashOpenSnippets, object: nil)
     }
 
     private var storageTab: some View {

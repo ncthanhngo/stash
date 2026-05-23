@@ -60,6 +60,26 @@ enum Migrations {
             """)
         }
 
+        migrator.registerMigration("v5_snippets") { db in
+            try db.create(table: "snippet_folders") { t in
+                t.column("id", .text).primaryKey()
+                t.column("name", .text).notNull()
+                t.column("sort_order", .integer).notNull().defaults(to: 0)
+            }
+            try db.create(table: "snippets") { t in
+                t.column("id", .text).primaryKey()
+                t.column("title", .text).notNull()
+                t.column("body", .text).notNull()
+                t.column("folder_id", .text)
+                t.column("is_template", .integer).notNull().defaults(to: 0)
+                t.column("created_at", .integer).notNull()
+                t.column("updated_at", .integer).notNull()
+                t.column("use_count", .integer).notNull().defaults(to: 0)
+            }
+            try db.create(index: "idx_snippets_folder", on: "snippets", columns: ["folder_id"])
+            try db.create(index: "idx_snippets_updated", on: "snippets", columns: ["updated_at"])
+        }
+
         return migrator
     }
 }

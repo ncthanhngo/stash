@@ -20,6 +20,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var urlSchemeHandler: URLSchemeHandler?
     private var vaultStore: VaultStore?
     private var vaultWindowController: VaultWindowController?
+    private var snippetStore: SnippetStore?
+    private var snippetsWindowController: SnippetsWindowController?
     private var captureSubscription: AnyCancellable?
     private var accessibilityAlertShown = false
 
@@ -100,6 +102,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 queue: .main
             ) { [weak vaultController] _ in
                 Task { @MainActor in vaultController?.show() }
+            }
+
+            let snippetRepo = GRDBSnippetRepository(writer: pool)
+            let snippetStore = SnippetStore(repository: snippetRepo, pasteEngine: engine)
+            self.snippetStore = snippetStore
+            let snippetsController = SnippetsWindowController(store: snippetStore)
+            snippetsWindowController = snippetsController
+            NotificationCenter.default.addObserver(
+                forName: .clipstashOpenSnippets,
+                object: nil,
+                queue: .main
+            ) { [weak snippetsController] _ in
+                Task { @MainActor in snippetsController?.show() }
             }
 
             captureSubscription = watcher.publisher.sink { [weak self] item in
