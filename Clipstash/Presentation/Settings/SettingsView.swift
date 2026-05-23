@@ -9,6 +9,7 @@ struct SettingsView: View {
     @AppStorage("clipstash.maxMB") private var maxMB: Int = 100
     @AppStorage("clipstash.restorePrevious") private var restorePrevious: Bool = true
     @State private var launchAtLogin: Bool = SMAppService.mainApp.status == .enabled
+    @State private var accessibilityTrusted: Bool = AccessibilityPermission.isTrusted()
 
     var body: some View {
         TabView {
@@ -38,6 +39,28 @@ struct SettingsView: View {
 
     private var generalTab: some View {
         Form {
+            Section("Permissions") {
+                HStack {
+                    Image(systemName: accessibilityTrusted
+                          ? "checkmark.circle.fill"
+                          : "exclamationmark.triangle.fill")
+                        .foregroundColor(accessibilityTrusted ? .green : .orange)
+                    Text(accessibilityTrusted
+                         ? "Accessibility granted — auto-paste works"
+                         : "Accessibility needed for ⌥1..9 auto-paste")
+                    Spacer()
+                    if !accessibilityTrusted {
+                        Button("Open Settings") { AccessibilityPrompt.openSettings() }
+                    }
+                    Button {
+                        accessibilityTrusted = AccessibilityPermission.isTrusted()
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                    .buttonStyle(.borderless)
+                    .help("Re-check")
+                }
+            }
             Section("Launch") {
                 Toggle("Launch at login", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { newValue in

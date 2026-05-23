@@ -14,6 +14,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var exclusions: ExclusionList?
     private var pinnedFolderSync: PinnedFolderSync?
     private var captureSubscription: AnyCancellable?
+    private var accessibilityAlertShown = false
 
     @MainActor
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -56,9 +57,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             center.registerDefaults()
             hotkeyCenter = center
 
-            AccessibilityPermission.requestIfNeeded()
+            verifyAccessibility()
         } catch {
             Self.log.error("startup failed: \(String(describing: error), privacy: .public)")
+        }
+    }
+
+    private func verifyAccessibility() {
+        AccessibilityPermission.requestIfNeeded()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            guard !AccessibilityPermission.isTrusted() else { return }
+            AccessibilityPrompt.showRequiredAlert()
         }
     }
 
@@ -107,7 +116,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         do {
             let pinnedItems = try repo.pinned()
             guard let item = pinnedItems.first(where: { $0.pinnedSlot == slot }) else {
-                HUDToast.show("Slot \(slot) empty")
+                HUDToast.show("Slot \(slot) empty", kind: .info)
                 return
             }
             if let template = item.pinnedTemplate, !template.isEmpty {
@@ -115,9 +124,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             } else {
                 try engine.paste(item, mode: .normal)
             }
+        } catch PasteError.accessibilityDenied {
+            Self.log.error("paste blocked: accessibility denied")
+            HUDToast.show(
+                "Copied to clipboard — press Cmd+V (auto-paste needs Accessibility)",
+                kind: .warning,
+                duration: 2.6
+            )
+            if !accessibilityAlertShown {
+                accessibilityAlertShown = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    AccessibilityPrompt.showRequiredAlert()
+                }
+            }
         } catch {
             Self.log.error("paste slot \(slot, privacy: .public) failed: \(String(describing: error), privacy: .public)")
-            HUDToast.show("Paste failed")
+            HUDToast.show("Paste failed", kind: .error)
         }
     }
 }

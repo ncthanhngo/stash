@@ -39,9 +39,10 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.soi.clipstash
         PRODUCT_NAME: Clipstash
-        CODE_SIGN_STYLE: Automatic
-        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "Clipstash Dev"
         DEVELOPMENT_TEAM: ""
+        OTHER_CODE_SIGN_FLAGS: "--timestamp=none"
         SWIFT_VERSION: "5.9"
         ENABLE_HARDENED_RUNTIME: NO
         MARKETING_VERSION: "0.1.0"
