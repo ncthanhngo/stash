@@ -1,0 +1,28 @@
+# Xcode / Swift
+.DS_Store
+build/
+DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcuserdatad/
+xcuserdata/
+*.moved-aside
+
+# SwiftPM
+.build/
+.swiftpm/
+Package.resolved
+
+# Local state
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# Build artifacts
+*.dmg
+*.app
+*.ipa
+
+# IDE
+.vscode/
+.idea/
