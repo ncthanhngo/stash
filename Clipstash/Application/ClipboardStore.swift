@@ -22,6 +22,7 @@ final class ClipboardStore: ObservableObject {
 
     private let repository: any ClipboardRepository
     private let pasteEngine: any PasteEngine
+    private let ocrService = OCRService()
     private var cancellables: Set<AnyCancellable> = []
 
     init(repository: any ClipboardRepository, pasteEngine: any PasteEngine) {
@@ -128,6 +129,38 @@ final class ClipboardStore: ObservableObject {
             refresh()
         } catch {
             Self.log.error("setTemplate failed: \(String(describing: error), privacy: .public)")
+        }
+    }
+
+    func extractText(from item: ClipboardItem) {
+        guard case .image(let data, _) = item.content else { return }
+        HUDToast.show("Extracting text…", kind: .info, duration: 1.4)
+        Task { [ocrService] in
+            let result = await ocrService.recognize(pngData: data)
+            await MainActor.run { self.handleOCRResult(result) }
+        }
+    }
+
+    private func handleOCRResult(_ result: Result<String, OCRError>) {
+        switch result {
+        case .success(let text):
+            let content = CapturedContent.text(text)
+            let item = ClipboardItem(
+                content: content,
+                contentHash: ContentHasher.hash(content),
+                sourceAppName: "Clipstash · OCR"
+            )
+            do {
+                try repository.insert(item)
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(text, forType: .string)
+                refresh()
+                HUDToast.show("Extracted \(text.count) chars", kind: .info)
+            } catch {
+                Self.log.error("OCR insert failed: \(String(describing: error), privacy: .public)")
+            }
+        case .failure(let err):
+            HUDToast.show("OCR failed: \(String(describing: err))", kind: .error)
         }
     }
 

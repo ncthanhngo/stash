@@ -1,9 +1,9 @@
 ---
 phase: 2
-title: "Quick Transforms"
-status: pending
+title: Quick Transforms
+status: completed
 priority: P1
-effort: "3h"
+effort: 3h
 dependencies: []
 ---
 

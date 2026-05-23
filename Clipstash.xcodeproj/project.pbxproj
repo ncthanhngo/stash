@@ -45,6 +45,7 @@
 		A048873C9B69B5D0D79816A2 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 583E4F232E132E09BEA9226A /* GRDB */; };
 		A09C811E8F8217C44567F699 /* HistoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53343DDAA0F56A61086ED81 /* HistoryRow.swift */; };
 		A800794CE6BB4778414CAD27 /* PrivacyFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B80FE840103A9E191225FD /* PrivacyFilterTests.swift */; };
+		A9F03B5759CFEBCE02A0E5AE /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91F6C1F37636CA7731B3427D /* OCRService.swift */; };
 		AAEC40FA2FE54E278E78740B /* ClipboardRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD5B5FA7FB7AEF67EA57CC1 /* ClipboardRecord.swift */; };
 		AB0DD119770B2E18F77CEB8F /* FuzzyScorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEC0803D05B415387E693A8 /* FuzzyScorer.swift */; };
 		AECF3D4550C55F5F4333655F /* TemplateTokenizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED5C5612A2A026E1965C77D /* TemplateTokenizerTests.swift */; };
@@ -114,6 +115,7 @@
 		7948D99DCF53BA0BD119FB73 /* FolderWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderWatcher.swift; sourceTree = "<group>"; };
 		7CFB1CDECD400CA71D4AA7E2 /* CapturedContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturedContent.swift; sourceTree = "<group>"; };
 		9029E47DD7EED77CBFF651EE /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
+		91F6C1F37636CA7731B3427D /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
 		96CD372847E79E9C20E47937 /* SlotFileFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlotFileFormat.swift; sourceTree = "<group>"; };
 		A90B5974EA2C9407D021ACA3 /* GRDBClipboardRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBClipboardRepository.swift; sourceTree = "<group>"; };
 		AD1D10771F6EFECDF2BDF447 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -173,6 +175,14 @@
 				2BF00BB622C4DFFECB6F92CA /* OnboardingWindow.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		0A5B3E44EBA0B158F579AD86 /* OCR */ = {
+			isa = PBXGroup;
+			children = (
+				91F6C1F37636CA7731B3427D /* OCRService.swift */,
+			);
+			path = OCR;
 			sourceTree = "<group>";
 		};
 		12B68C838F47DF9FEE7A2AFB /* Storage */ = {
@@ -357,6 +367,7 @@
 			children = (
 				ED3950356959F6201106F692 /* Capture */,
 				B5299E97EB68ED94F36F3893 /* Hotkeys */,
+				0A5B3E44EBA0B158F579AD86 /* OCR */,
 				D5336DF9EAF82C7AAEB3F289 /* Paste */,
 				8FE500BCB81B73C0643178B9 /* Permissions */,
 				12B68C838F47DF9FEE7A2AFB /* Storage */,
@@ -504,6 +515,7 @@
 				E3E6C8EF84192B13ED161945 /* HotkeyCenter.swift in Sources */,
 				343D52105315F9ECC1C8D5EF /* MenuBarController.swift in Sources */,
 				DA35FE3D87B65F54C6418EB3 /* Migrations.swift in Sources */,
+				A9F03B5759CFEBCE02A0E5AE /* OCRService.swift in Sources */,
 				93F8133E2723C2F8D688A6C5 /* OnboardingWindow.swift in Sources */,
 				D2E25D8EBFF63D8213ADF01F /* PasteEngine.swift in Sources */,
 				2938B50AAC42B061628BB8F8 /* PasteboardReading.swift in Sources */,

@@ -117,6 +117,10 @@ struct ClipboardPopoverView: View {
             Divider()
             transformMenu(for: item)
         }
+        if case .image = item.content {
+            Divider()
+            Button("Extract text (OCR)") { store.extractText(from: item) }
+        }
         Divider()
         Button("Delete", role: .destructive) { store.delete(item) }
     }
