@@ -121,9 +121,10 @@ struct ClipboardPopoverView: View {
             }
             Button("Unpin from slot \(slot)") { store.unpin(slot: slot) }
         }
-        if case .text = item.content {
+        if case .text(let text) = item.content {
             Divider()
             transformMenu(for: item)
+            Button("Preview as code") { CodePreview.present(text: text) }
         }
         if case .image = item.content {
             Divider()

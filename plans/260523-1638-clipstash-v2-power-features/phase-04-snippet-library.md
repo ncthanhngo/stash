@@ -1,9 +1,9 @@
 ---
 phase: 4
-title: "Snippet Library"
-status: pending
+title: Snippet Library
+status: completed
 priority: P1
-effort: "10h"
+effort: 10h
 dependencies: []
 ---
 
