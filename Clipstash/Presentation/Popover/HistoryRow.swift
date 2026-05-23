@@ -4,9 +4,15 @@ import AppKit
 struct HistoryRow: View {
     let item: ClipboardItem
     var isSelected: Bool = false
+    var isMultiSelected: Bool = false
 
     var body: some View {
         HStack(spacing: 12) {
+            if isMultiSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.accentColor)
+                    .font(.system(size: 14))
+            }
             iconView
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -32,9 +38,11 @@ struct HistoryRow: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(
-            isSelected
-                ? Color.accentColor.opacity(0.18)
-                : Color.clear
+            isMultiSelected
+                ? Color.accentColor.opacity(0.25)
+                : isSelected
+                    ? Color.accentColor.opacity(0.18)
+                    : Color.clear
         )
         .help(absoluteTimeTooltip)
         .onDrag { DragPayload.provider(for: item) }

@@ -47,14 +47,40 @@ final class PopoverKeyMonitor {
         case (36, []), (76, []):
             store.pasteSelected()
             return .handled
+        case (49, []):
+            store.toggleMultiSelectAtCursor()
+            return .handled
         case (51, .command):
-            store.deleteSelected()
+            if store.selectedIDs.isEmpty {
+                store.deleteSelected()
+            } else {
+                store.deleteMultiSelection()
+            }
             return .handled
         case (53, []):
-            store.dismissPopover?()
+            if !store.selectedIDs.isEmpty {
+                store.clearMultiSelection()
+            } else {
+                store.dismissPopover?()
+            }
             return .handled
         default:
             break
+        }
+
+        if modifiers == .command,
+           let chars = event.charactersIgnoringModifiers
+        {
+            switch chars {
+            case "a":
+                store.selectAllMatches()
+                return .handled
+            case "j":
+                store.concatenateMultiSelection()
+                return .handled
+            default:
+                break
+            }
         }
 
         if modifiers == .command,

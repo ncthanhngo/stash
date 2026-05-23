@@ -1,9 +1,9 @@
 ---
 phase: 12
-title: "Frequency Analytics"
-status: pending
+title: Frequency Analytics
+status: completed
 priority: P2
-effort: "3h"
+effort: 3h
 dependencies: []
 ---
 

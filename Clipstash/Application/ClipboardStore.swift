@@ -14,6 +14,7 @@ final class ClipboardStore: ObservableObject {
     @Published var selectedIndex: Int = 0
     @Published var editingItemID: UUID? = nil
     @Published var editDraft: String = ""
+    @Published var selectedIDs: Set<UUID> = []
 
     var dismissPopover: (() -> Void)?
     var openSettings: (() -> Void)?
@@ -74,6 +75,57 @@ final class ClipboardStore: ObservableObject {
 
     func moveSelectionUp() {
         selectedIndex = max(selectedIndex - 1, 0)
+    }
+
+    func toggleMultiSelectAtCursor() {
+        guard !matches.isEmpty else { return }
+        let index = max(0, min(selectedIndex, matches.count - 1))
+        let id = matches[index].id
+        if selectedIDs.contains(id) {
+            selectedIDs.remove(id)
+        } else {
+            selectedIDs.insert(id)
+        }
+    }
+
+    func selectAllMatches() {
+        selectedIDs = Set(matches.map(\.id))
+    }
+
+    func clearMultiSelection() {
+        selectedIDs.removeAll()
+    }
+
+    func deleteMultiSelection() {
+        guard !selectedIDs.isEmpty else { return }
+        for id in selectedIDs {
+            try? repository.delete(itemID: id)
+        }
+        selectedIDs.removeAll()
+        refresh()
+    }
+
+    func concatenateMultiSelection() {
+        guard !selectedIDs.isEmpty else { return }
+        let chosen = matches
+            .filter { selectedIDs.contains($0.id) }
+            .compactMap { match -> String? in
+                if case .text(let s) = match.item.content { return s }
+                return nil
+            }
+        guard !chosen.isEmpty else { return }
+        let joined = chosen.joined(separator: "\n\n")
+        let content = CapturedContent.text(joined)
+        let item = ClipboardItem(
+            content: content,
+            contentHash: ContentHasher.hash(content),
+            sourceAppName: "Clipstash · concat"
+        )
+        try? repository.insert(item)
+        selectedIDs.removeAll()
+        refresh()
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(joined, forType: .string)
     }
 
     func refresh() {
