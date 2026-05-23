@@ -1,14 +1,22 @@
 ---
-title: "macOS Clipboard Manager MVP"
-description: "Local-first menu-bar clipboard manager: history (text+images), 9 pinned slots (Option+1..9), fuzzy search, plain-text paste, snippet variables, privacy exclusions"
+title: macOS Clipboard Manager MVP
+description: >-
+  Local-first menu-bar clipboard manager: history (text+images), 9 pinned slots
+  (Option+1..9), fuzzy search, plain-text paste, snippet variables, privacy
+  exclusions
 status: pending
 priority: P2
-branch: ""
-tags: ["macos", "swiftui", "clipboard", "menu-bar", "mvp"]
+branch: ''
+tags:
+  - macos
+  - swiftui
+  - clipboard
+  - menu-bar
+  - mvp
 blockedBy: []
 blocks: []
-created: "2026-05-23T06:57:56.712Z"
-createdBy: "ck:plan"
+created: '2026-05-23T06:57:56.712Z'
+createdBy: 'ck:plan'
 source: skill
 ---
 
@@ -28,7 +36,7 @@ Native macOS menu-bar app that captures clipboard history (text + images), expos
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | [Project Setup](./phase-01-project-setup.md) | Pending |
+| 1 | [Project Setup](./phase-01-project-setup.md) | Completed |
 | 2 | [Pasteboard Capture](./phase-02-pasteboard-capture.md) | Pending |
 | 3 | [SQLite Storage](./phase-03-sqlite-storage.md) | Pending |
 | 4 | [Hotkey & Paste Injection](./phase-04-hotkey-paste-injection.md) | Pending |

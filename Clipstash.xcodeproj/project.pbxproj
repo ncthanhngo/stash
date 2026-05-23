@@ -8,19 +8,29 @@
 
 /* Begin PBXBuildFile section */
 		11A5B4704A107F2415397601 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029FA3D7E2B6787A7D1E9505 /* AppDelegate.swift */; };
+		23E992FF16AD542E39173A55 /* ClipboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFDDE1DCDF1C1BF22896F58 /* ClipboardItem.swift */; };
+		2938B50AAC42B061628BB8F8 /* PasteboardReading.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF25575CA44DDA3041E753EA /* PasteboardReading.swift */; };
 		343D52105315F9ECC1C8D5EF /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44F95D4F706D312E64DADD3E /* MenuBarController.swift */; };
 		3C63706FB94D951A83FE9BB2 /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = A1136442512986DF9FCAF225 /* HotKey */; };
+		4763DF61C7987DF8C586902E /* CapturedContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFB1CDECD400CA71D4AA7E2 /* CapturedContent.swift */; };
 		75A95D6F49BD5CB0F7D78480 /* ClipstashApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08886CC925826F82A1DFABAB /* ClipstashApp.swift */; };
 		7AC4A93CDDBE957405AAFF87 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 127CC8B2591DE258777F317F /* GRDB */; };
+		D03C5F81FEBEF8EB96D5902F /* ClipboardWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01958B1DAF9146D2BAE1ECB3 /* ClipboardWatcher.swift */; };
+		F3D43613D73C024F95758428 /* SystemPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBCFD46A9627B188D1EE5A47 /* SystemPasteboard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		01958B1DAF9146D2BAE1ECB3 /* ClipboardWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardWatcher.swift; sourceTree = "<group>"; };
 		029FA3D7E2B6787A7D1E9505 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		08886CC925826F82A1DFABAB /* ClipstashApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipstashApp.swift; sourceTree = "<group>"; };
 		44F95D4F706D312E64DADD3E /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
 		691D7BA5DC490FEBB0892AA1 /* Clipstash.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Clipstash.entitlements; sourceTree = "<group>"; };
 		780F8C6FF465978D9774BFDB /* Clipstash.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Clipstash.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7CFB1CDECD400CA71D4AA7E2 /* CapturedContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturedContent.swift; sourceTree = "<group>"; };
 		AD1D10771F6EFECDF2BDF447 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		AF25575CA44DDA3041E753EA /* PasteboardReading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardReading.swift; sourceTree = "<group>"; };
+		DAFDDE1DCDF1C1BF22896F58 /* ClipboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardItem.swift; sourceTree = "<group>"; };
+		EBCFD46A9627B188D1EE5A47 /* SystemPasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPasteboard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +59,8 @@
 			isa = PBXGroup;
 			children = (
 				6252C5D9E8FB4491BCFD614E /* Application */,
+				D53C2093A39C51A4489C54E8 /* Domain */,
+				E99879D2FBAA7C390685513B /* Infrastructure */,
 				548D4D2515522BE0657421E9 /* Presentation */,
 				15D6EA5189778EF7A81EFAB1 /* Resources */,
 				08886CC925826F82A1DFABAB /* ClipstashApp.swift */,
@@ -94,6 +106,33 @@
 				780F8C6FF465978D9774BFDB /* Clipstash.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		D53C2093A39C51A4489C54E8 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				7CFB1CDECD400CA71D4AA7E2 /* CapturedContent.swift */,
+				DAFDDE1DCDF1C1BF22896F58 /* ClipboardItem.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		E99879D2FBAA7C390685513B /* Infrastructure */ = {
+			isa = PBXGroup;
+			children = (
+				ED3950356959F6201106F692 /* Capture */,
+			);
+			path = Infrastructure;
+			sourceTree = "<group>";
+		};
+		ED3950356959F6201106F692 /* Capture */ = {
+			isa = PBXGroup;
+			children = (
+				01958B1DAF9146D2BAE1ECB3 /* ClipboardWatcher.swift */,
+				AF25575CA44DDA3041E753EA /* PasteboardReading.swift */,
+				EBCFD46A9627B188D1EE5A47 /* SystemPasteboard.swift */,
+			);
+			path = Capture;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -163,8 +202,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				11A5B4704A107F2415397601 /* AppDelegate.swift in Sources */,
+				4763DF61C7987DF8C586902E /* CapturedContent.swift in Sources */,
+				23E992FF16AD542E39173A55 /* ClipboardItem.swift in Sources */,
+				D03C5F81FEBEF8EB96D5902F /* ClipboardWatcher.swift in Sources */,
 				75A95D6F49BD5CB0F7D78480 /* ClipstashApp.swift in Sources */,
 				343D52105315F9ECC1C8D5EF /* MenuBarController.swift in Sources */,
+				2938B50AAC42B061628BB8F8 /* PasteboardReading.swift in Sources */,
+				F3D43613D73C024F95758428 /* SystemPasteboard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
