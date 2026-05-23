@@ -1,10 +1,11 @@
 ---
 phase: 8
-title: "Privacy Exclusion"
-status: pending
+title: Privacy Exclusion
+status: completed
 priority: P1
-effort: "3h"
-dependencies: [2]
+effort: 3h
+dependencies:
+  - 2
 ---
 
 # Phase 8: Privacy Exclusion

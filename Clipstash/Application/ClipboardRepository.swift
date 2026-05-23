@@ -1,6 +1,9 @@
 import Foundation
+import Combine
 
 protocol ClipboardRepository: AnyObject {
+    var pinChanges: AnyPublisher<Void, Never> { get }
+
     func insert(_ item: ClipboardItem) throws
     func recent(limit: Int) throws -> [ClipboardItem]
     func pinned() throws -> [ClipboardItem]

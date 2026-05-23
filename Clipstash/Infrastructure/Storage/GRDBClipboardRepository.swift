@@ -1,5 +1,6 @@
 import Foundation
 import GRDB
+import Combine
 import os
 
 final class GRDBClipboardRepository: ClipboardRepository {
@@ -7,6 +8,9 @@ final class GRDBClipboardRepository: ClipboardRepository {
 
     private let dbPool: DatabasePool
     private let settings: StorageSettings
+    private let pinChangesSubject = PassthroughSubject<Void, Never>()
+
+    var pinChanges: AnyPublisher<Void, Never> { pinChangesSubject.eraseToAnyPublisher() }
 
     init(dbPool: DatabasePool, settings: StorageSettings = .defaults) {
         self.dbPool = dbPool
@@ -14,6 +18,7 @@ final class GRDBClipboardRepository: ClipboardRepository {
     }
 
     func insert(_ item: ClipboardItem) throws {
+        var affectedPinned = false
         try dbPool.write { db in
             if let existing = try ClipboardRecord
                 .filter(Column("content_hash") == item.contentHash)
@@ -23,8 +28,10 @@ final class GRDBClipboardRepository: ClipboardRepository {
                 try existing.delete(db)
             }
             try ClipboardRecord(from: item).insert(db)
+            if item.isPinned { affectedPinned = true }
             try self.evictIfNeeded(in: db)
         }
+        if affectedPinned { pinChangesSubject.send() }
     }
 
     func recent(limit: Int = 200) throws -> [ClipboardItem] {
@@ -59,6 +66,7 @@ final class GRDBClipboardRepository: ClipboardRepository {
                 arguments: [slot, itemID.uuidString]
             )
         }
+        pinChangesSubject.send()
     }
 
     func unpin(slot: Int) throws {
@@ -68,14 +76,21 @@ final class GRDBClipboardRepository: ClipboardRepository {
                 arguments: [slot]
             )
         }
+        pinChangesSubject.send()
     }
 
     func delete(itemID: UUID) throws {
+        var deletedPinned = false
         try dbPool.write { db in
-            _ = try ClipboardRecord
+            if let record = try ClipboardRecord
                 .filter(Column("id") == itemID.uuidString)
-                .deleteAll(db)
+                .fetchOne(db)
+            {
+                if record.isPinned { deletedPinned = true }
+                try record.delete(db)
+            }
         }
+        if deletedPinned { pinChangesSubject.send() }
     }
 
     func search(query: String, limit: Int = 200) throws -> [ClipboardItem] {
@@ -110,6 +125,7 @@ final class GRDBClipboardRepository: ClipboardRepository {
                 arguments: [template, slot]
             )
         }
+        pinChangesSubject.send()
     }
 
     private func evictIfNeeded(in db: Database) throws {

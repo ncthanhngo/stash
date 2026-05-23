@@ -12,6 +12,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var hotkeyCenter: HotkeyCenter?
     private var store: ClipboardStore?
     private var exclusions: ExclusionList?
+    private var pinnedFolderSync: PinnedFolderSync?
     private var captureSubscription: AnyCancellable?
 
     @MainActor
@@ -38,7 +39,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let store = ClipboardStore(repository: repo, pasteEngine: engine)
             self.store = store
 
-            menuBarController = MenuBarController(store: store, exclusions: exclusions)
+            let sync = PinnedFolderSync(repository: repo, exclusions: exclusions)
+            self.pinnedFolderSync = sync
+            sync.restorePersisted()
+
+            menuBarController = MenuBarController(store: store, exclusions: exclusions, sync: sync)
 
             captureSubscription = watcher.publisher.sink { [weak self] item in
                 self?.handleCaptured(item)
@@ -60,6 +65,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ notification: Notification) {
         clipboardWatcher?.stop()
         hotkeyCenter?.unregisterAll()
+        pinnedFolderSync?.disable()
         captureSubscription?.cancel()
         clipboardWatcher = nil
         menuBarController = nil
@@ -68,6 +74,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         hotkeyCenter = nil
         store = nil
         exclusions = nil
+        pinnedFolderSync = nil
     }
 
     private func handleCaptured(_ item: ClipboardItem) {

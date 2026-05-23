@@ -8,9 +8,9 @@ final class MenuBarController {
     private let store: ClipboardStore
     private let settingsController: SettingsWindowController
 
-    init(store: ClipboardStore, exclusions: ExclusionList) {
+    init(store: ClipboardStore, exclusions: ExclusionList, sync: PinnedFolderSync) {
         self.store = store
-        self.settingsController = SettingsWindowController(exclusions: exclusions)
+        self.settingsController = SettingsWindowController(exclusions: exclusions, sync: sync)
         self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         let popover = NSPopover()

@@ -16,11 +16,14 @@
 		343D52105315F9ECC1C8D5EF /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44F95D4F706D312E64DADD3E /* MenuBarController.swift */; };
 		3C63706FB94D951A83FE9BB2 /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = A1136442512986DF9FCAF225 /* HotKey */; };
 		3E74B875A902D87BB937026B /* ClipboardStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719C4B72E47724B2DF4A68C5 /* ClipboardStore.swift */; };
+		42342ED5CA72AEE0D0E079C6 /* FolderWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7948D99DCF53BA0BD119FB73 /* FolderWatcher.swift */; };
+		438152210B30BEDC268AC0B8 /* SlotFileFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96CD372847E79E9C20E47937 /* SlotFileFormat.swift */; };
 		4763DF61C7987DF8C586902E /* CapturedContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFB1CDECD400CA71D4AA7E2 /* CapturedContent.swift */; };
 		53D113627BCCC97568749D03 /* GRDBClipboardRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90B5974EA2C9407D021ACA3 /* GRDBClipboardRepository.swift */; };
 		592B5D9C1FABAB0723CFA001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF14509890AABBAA1871817 /* SettingsView.swift */; };
 		61399F3C79F430AF00A60958 /* ClipboardPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154B9C45CEDF9AD0A40FCFFC /* ClipboardPopoverView.swift */; };
 		63B0751B43D0F8724CAE110E /* TemplateEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F54DEB9EC42377227575BC /* TemplateEditor.swift */; };
+		66505D29162EF66AE7A23EFB /* PinnedFolderSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F74B54EC6CF6100C988663 /* PinnedFolderSync.swift */; };
 		75A95D6F49BD5CB0F7D78480 /* ClipstashApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08886CC925826F82A1DFABAB /* ClipstashApp.swift */; };
 		7AC4A93CDDBE957405AAFF87 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 127CC8B2591DE258777F317F /* GRDB */; };
 		966452C1C0B9BD07D478AAF9 /* ClipboardRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABFAEE01A1B32299748BC29 /* ClipboardRepository.swift */; };
@@ -45,6 +48,7 @@
 /* Begin PBXFileReference section */
 		01958B1DAF9146D2BAE1ECB3 /* ClipboardWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardWatcher.swift; sourceTree = "<group>"; };
 		029FA3D7E2B6787A7D1E9505 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		04F74B54EC6CF6100C988663 /* PinnedFolderSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedFolderSync.swift; sourceTree = "<group>"; };
 		06F54DEB9EC42377227575BC /* TemplateEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateEditor.swift; sourceTree = "<group>"; };
 		08886CC925826F82A1DFABAB /* ClipstashApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipstashApp.swift; sourceTree = "<group>"; };
 		154B9C45CEDF9AD0A40FCFFC /* ClipboardPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardPopoverView.swift; sourceTree = "<group>"; };
@@ -62,8 +66,10 @@
 		6FD5B5FA7FB7AEF67EA57CC1 /* ClipboardRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardRecord.swift; sourceTree = "<group>"; };
 		719C4B72E47724B2DF4A68C5 /* ClipboardStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardStore.swift; sourceTree = "<group>"; };
 		780F8C6FF465978D9774BFDB /* Clipstash.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Clipstash.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7948D99DCF53BA0BD119FB73 /* FolderWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderWatcher.swift; sourceTree = "<group>"; };
 		7CFB1CDECD400CA71D4AA7E2 /* CapturedContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturedContent.swift; sourceTree = "<group>"; };
 		9029E47DD7EED77CBFF651EE /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
+		96CD372847E79E9C20E47937 /* SlotFileFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlotFileFormat.swift; sourceTree = "<group>"; };
 		A90B5974EA2C9407D021ACA3 /* GRDBClipboardRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBClipboardRepository.swift; sourceTree = "<group>"; };
 		AD1D10771F6EFECDF2BDF447 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AF25575CA44DDA3041E753EA /* PasteboardReading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardReading.swift; sourceTree = "<group>"; };
@@ -176,6 +182,16 @@
 			path = Templates;
 			sourceTree = "<group>";
 		};
+		68DE13D3E554E08D98D4CAC7 /* Sync */ = {
+			isa = PBXGroup;
+			children = (
+				7948D99DCF53BA0BD119FB73 /* FolderWatcher.swift */,
+				04F74B54EC6CF6100C988663 /* PinnedFolderSync.swift */,
+				96CD372847E79E9C20E47937 /* SlotFileFormat.swift */,
+			);
+			path = Sync;
+			sourceTree = "<group>";
+		};
 		7DA79395C9C564D24E612C98 = {
 			isa = PBXGroup;
 			children = (
@@ -254,6 +270,7 @@
 				D5336DF9EAF82C7AAEB3F289 /* Paste */,
 				8FE500BCB81B73C0643178B9 /* Permissions */,
 				12B68C838F47DF9FEE7A2AFB /* Storage */,
+				68DE13D3E554E08D98D4CAC7 /* Sync */,
 			);
 			path = Infrastructure;
 			sourceTree = "<group>";
@@ -346,6 +363,7 @@
 				75A95D6F49BD5CB0F7D78480 /* ClipstashApp.swift in Sources */,
 				BFE6952A4AC73F271AE438B9 /* DatabaseFactory.swift in Sources */,
 				C6F32CD8D320DFE6D00F2872 /* ExclusionList.swift in Sources */,
+				42342ED5CA72AEE0D0E079C6 /* FolderWatcher.swift in Sources */,
 				AB0DD119770B2E18F77CEB8F /* FuzzyScorer.swift in Sources */,
 				53D113627BCCC97568749D03 /* GRDBClipboardRepository.swift in Sources */,
 				B0747E520926717B1AAC9BD3 /* HUDToast.swift in Sources */,
@@ -356,9 +374,11 @@
 				DA35FE3D87B65F54C6418EB3 /* Migrations.swift in Sources */,
 				D2E25D8EBFF63D8213ADF01F /* PasteEngine.swift in Sources */,
 				2938B50AAC42B061628BB8F8 /* PasteboardReading.swift in Sources */,
+				66505D29162EF66AE7A23EFB /* PinnedFolderSync.swift in Sources */,
 				9A7F9BDFD5FE3C3F1DB10739 /* PrivacyFilter.swift in Sources */,
 				592B5D9C1FABAB0723CFA001 /* SettingsView.swift in Sources */,
 				147ADE5253153C0E75918523 /* SettingsWindowController.swift in Sources */,
+				438152210B30BEDC268AC0B8 /* SlotFileFormat.swift in Sources */,
 				D8B80469542D631B9ED0B244 /* StorageSettings.swift in Sources */,
 				E706A001D8D27BFF7D590535 /* SystemPasteEngine.swift in Sources */,
 				F3D43613D73C024F95758428 /* SystemPasteboard.swift in Sources */,

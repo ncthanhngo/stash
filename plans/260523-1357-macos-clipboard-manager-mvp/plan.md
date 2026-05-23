@@ -43,7 +43,7 @@ Native macOS menu-bar app that captures clipboard history (text + images), expos
 | 5 | [Menu-bar UI](./phase-05-menu-bar-ui.md) | Completed |
 | 6 | [Fuzzy Search](./phase-06-fuzzy-search.md) | Completed |
 | 7 | [Snippet Variables](./phase-07-snippet-variables.md) | Completed |
-| 8 | [Privacy Exclusion](./phase-08-privacy-exclusion.md) | Pending |
+| 8 | [Privacy Exclusion](./phase-08-privacy-exclusion.md) | Completed |
 | 9 | [Tests & Polish](./phase-09-tests-polish.md) | Pending |
 | 10 | [Pinned-Slot Folder Sync](./phase-10-pinned-folder-sync.md) | Pending |
 

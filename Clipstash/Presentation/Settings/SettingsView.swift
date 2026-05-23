@@ -3,6 +3,7 @@ import AppKit
 
 struct SettingsView: View {
     @ObservedObject var exclusions: ExclusionList
+    @ObservedObject var sync: PinnedFolderSync
     @AppStorage("clipstash.maxItems") private var maxItems: Int = 500
     @AppStorage("clipstash.maxMB") private var maxMB: Int = 100
     @AppStorage("clipstash.restorePrevious") private var restorePrevious: Bool = true
@@ -12,8 +13,9 @@ struct SettingsView: View {
             storageTab.tabItem { Label("Storage", systemImage: "internaldrive") }
             generalTab.tabItem { Label("General", systemImage: "gear") }
             exclusionsTab.tabItem { Label("Exclusions", systemImage: "hand.raised") }
+            syncTab.tabItem { Label("Sync", systemImage: "arrow.triangle.2.circlepath") }
         }
-        .frame(width: 480, height: 380)
+        .frame(width: 480, height: 420)
         .padding()
     }
 
@@ -84,5 +86,39 @@ struct SettingsView: View {
               let id = bundle.bundleIdentifier
         else { return }
         exclusions.add(id)
+    }
+
+    private var syncTab: some View {
+        Form {
+            Section("Pinned-slot sync") {
+                if let path = sync.folderPath {
+                    LabeledContent("Folder", value: path)
+                        .font(.system(.callout, design: .monospaced))
+                    Button("Disable sync", role: .destructive) { sync.disable() }
+                } else {
+                    Text("Pick a folder synced by OneDrive, iCloud Drive, Dropbox, or Google Drive. Clipstash writes per-slot files into a `Clipstash/` subfolder. History stays on this Mac.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Button("Pick folder…") { pickSyncFolder() }
+                }
+            }
+            Section {
+                Text("Last-write-wins per slot. Items larger than 5 MB or from excluded apps are skipped.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .formStyle(.grouped)
+    }
+
+    private func pickSyncFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.allowsMultipleSelection = false
+        panel.message = "Choose a folder synced by your cloud client"
+        if panel.runModal() == .OK, let url = panel.url {
+            sync.enable(folderURL: url)
+        }
     }
 }
