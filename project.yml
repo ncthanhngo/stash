@@ -54,12 +54,36 @@ targets:
       - package: HotKey
         product: HotKey
 
+  ClipstashTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - path: ClipstashTests
+    dependencies:
+      - target: Clipstash
+      - package: GRDB
+        product: GRDB
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.soi.clipstash.tests
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Clipstash.app/Contents/MacOS/Clipstash"
+        SWIFT_VERSION: "5.9"
+        CODE_SIGN_IDENTITY: "-"
+        GENERATE_INFOPLIST_FILE: YES
+
 schemes:
   Clipstash:
     build:
       targets:
         Clipstash: all
+        ClipstashTests: [test]
     run:
       config: Debug
+    test:
+      config: Debug
+      targets:
+        - ClipstashTests
     archive:
       config: Release

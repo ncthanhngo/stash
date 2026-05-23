@@ -1,10 +1,13 @@
 ---
 phase: 10
-title: "Pinned-Slot Sync via Watched Folder"
-status: pending
+title: Pinned-Slot Sync via Watched Folder
+status: completed
 priority: P2
-effort: "4h"
-dependencies: [3, 5, 8]
+effort: 4h
+dependencies:
+  - 3
+  - 5
+  - 8
 ---
 
 # Phase 10: Pinned-Slot Sync via Watched Folder

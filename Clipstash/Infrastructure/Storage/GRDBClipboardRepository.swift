@@ -6,20 +6,24 @@ import os
 final class GRDBClipboardRepository: ClipboardRepository {
     private static let log = Logger(subsystem: "com.soi.clipstash", category: "storage")
 
-    private let dbPool: DatabasePool
+    private let writer: any DatabaseWriter
     private let settings: StorageSettings
     private let pinChangesSubject = PassthroughSubject<Void, Never>()
 
     var pinChanges: AnyPublisher<Void, Never> { pinChangesSubject.eraseToAnyPublisher() }
 
-    init(dbPool: DatabasePool, settings: StorageSettings = .defaults) {
-        self.dbPool = dbPool
+    init(writer: any DatabaseWriter, settings: StorageSettings = .defaults) {
+        self.writer = writer
         self.settings = settings
+    }
+
+    convenience init(dbPool: DatabasePool, settings: StorageSettings = .defaults) {
+        self.init(writer: dbPool, settings: settings)
     }
 
     func insert(_ item: ClipboardItem) throws {
         var affectedPinned = false
-        try dbPool.write { db in
+        try writer.write { db in
             if let existing = try ClipboardRecord
                 .filter(Column("content_hash") == item.contentHash)
                 .filter(Column("is_pinned") == false)
@@ -35,7 +39,7 @@ final class GRDBClipboardRepository: ClipboardRepository {
     }
 
     func recent(limit: Int = 200) throws -> [ClipboardItem] {
-        try dbPool.read { db in
+        try writer.read { db in
             try ClipboardRecord
                 .order(Column("created_at").desc)
                 .limit(limit)
@@ -45,7 +49,7 @@ final class GRDBClipboardRepository: ClipboardRepository {
     }
 
     func pinned() throws -> [ClipboardItem] {
-        try dbPool.read { db in
+        try writer.read { db in
             try ClipboardRecord
                 .filter(Column("is_pinned") == true)
                 .order(Column("pinned_slot").asc)
@@ -56,7 +60,7 @@ final class GRDBClipboardRepository: ClipboardRepository {
 
     func pin(itemID: UUID, slot: Int) throws {
         guard (1...9).contains(slot) else { throw StorageError.invalidSlot(slot) }
-        try dbPool.write { db in
+        try writer.write { db in
             try db.execute(
                 sql: "UPDATE clipboard_items SET is_pinned = 0, pinned_slot = NULL, pinned_template = NULL WHERE pinned_slot = ?",
                 arguments: [slot]
@@ -70,7 +74,7 @@ final class GRDBClipboardRepository: ClipboardRepository {
     }
 
     func unpin(slot: Int) throws {
-        try dbPool.write { db in
+        try writer.write { db in
             try db.execute(
                 sql: "UPDATE clipboard_items SET is_pinned = 0, pinned_slot = NULL, pinned_template = NULL WHERE pinned_slot = ?",
                 arguments: [slot]
@@ -81,7 +85,7 @@ final class GRDBClipboardRepository: ClipboardRepository {
 
     func delete(itemID: UUID) throws {
         var deletedPinned = false
-        try dbPool.write { db in
+        try writer.write { db in
             if let record = try ClipboardRecord
                 .filter(Column("id") == itemID.uuidString)
                 .fetchOne(db)
@@ -96,7 +100,7 @@ final class GRDBClipboardRepository: ClipboardRepository {
     func search(query: String, limit: Int = 200) throws -> [ClipboardItem] {
         guard !query.isEmpty else { return try recent(limit: limit) }
         let like = "%\(query)%"
-        return try dbPool.read { db in
+        return try writer.read { db in
             try ClipboardRecord
                 .filter(
                     sql: "text_preview LIKE ? COLLATE NOCASE OR source_app_name LIKE ? COLLATE NOCASE",
@@ -110,7 +114,7 @@ final class GRDBClipboardRepository: ClipboardRepository {
     }
 
     func findByHash(_ hash: String) throws -> ClipboardItem? {
-        try dbPool.read { db in
+        try writer.read { db in
             try ClipboardRecord
                 .filter(Column("content_hash") == hash)
                 .fetchOne(db)?
@@ -119,7 +123,7 @@ final class GRDBClipboardRepository: ClipboardRepository {
     }
 
     func setPinnedTemplate(slot: Int, template: String?) throws {
-        try dbPool.write { db in
+        try writer.write { db in
             try db.execute(
                 sql: "UPDATE clipboard_items SET pinned_template = ? WHERE pinned_slot = ?",
                 arguments: [template, slot]

@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import ServiceManagement
 
 struct SettingsView: View {
     @ObservedObject var exclusions: ExclusionList
@@ -7,6 +8,7 @@ struct SettingsView: View {
     @AppStorage("clipstash.maxItems") private var maxItems: Int = 500
     @AppStorage("clipstash.maxMB") private var maxMB: Int = 100
     @AppStorage("clipstash.restorePrevious") private var restorePrevious: Bool = true
+    @State private var launchAtLogin: Bool = SMAppService.mainApp.status == .enabled
 
     var body: some View {
         TabView {
@@ -36,6 +38,12 @@ struct SettingsView: View {
 
     private var generalTab: some View {
         Form {
+            Section("Launch") {
+                Toggle("Launch at login", isOn: $launchAtLogin)
+                    .onChange(of: launchAtLogin) { newValue in
+                        toggleLaunchAtLogin(newValue)
+                    }
+            }
             Section("Paste behaviour") {
                 Toggle("Restore previous clipboard after paste", isOn: $restorePrevious)
             }
@@ -46,6 +54,18 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
+    }
+
+    private func toggleLaunchAtLogin(_ enable: Bool) {
+        do {
+            if enable {
+                try SMAppService.mainApp.register()
+            } else {
+                try SMAppService.mainApp.unregister()
+            }
+        } catch {
+            launchAtLogin = !enable
+        }
     }
 
     private var exclusionsTab: some View {
