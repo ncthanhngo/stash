@@ -1,9 +1,9 @@
 ---
 phase: 8
-title: "Privacy Mode Toggle"
-status: pending
+title: Privacy Mode Toggle
+status: completed
 priority: P1
-effort: "1h"
+effort: 1h
 dependencies: []
 ---
 

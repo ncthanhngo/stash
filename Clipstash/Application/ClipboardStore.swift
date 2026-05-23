@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import AppKit
 import os
 
 @MainActor
@@ -127,6 +128,30 @@ final class ClipboardStore: ObservableObject {
             refresh()
         } catch {
             Self.log.error("setTemplate failed: \(String(describing: error), privacy: .public)")
+        }
+    }
+
+    func applyTransform(_ transform: TextTransform, to item: ClipboardItem) {
+        guard case .text(let source) = item.content else { return }
+        switch transform.apply(source) {
+        case .success(let out):
+            let content = CapturedContent.text(out)
+            let newItem = ClipboardItem(
+                content: content,
+                contentHash: ContentHasher.hash(content),
+                sourceAppName: "Clipstash · \(transform.displayName)"
+            )
+            do {
+                try repository.insert(newItem)
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(out, forType: .string)
+                refresh()
+                HUDToast.show("Transformed: \(transform.displayName)", kind: .info)
+            } catch {
+                Self.log.error("transform insert failed: \(String(describing: error), privacy: .public)")
+            }
+        case .failure(let err):
+            HUDToast.show("Transform failed: \(err.message)", kind: .error)
         }
     }
 

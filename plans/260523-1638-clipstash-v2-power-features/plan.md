@@ -1,14 +1,23 @@
 ---
-title: "Clipstash v2 — Power-User Features"
-description: "15 features turning MVP into a pro tool: CLI/URL automation, transforms, OCR, snippet library, prompts, vault, expire, privacy mode, drag, inline edit, multi-select, analytics, smart paste, syntax HL, browser extension"
+title: Clipstash v2 — Power-User Features
+description: >-
+  15 features turning MVP into a pro tool: CLI/URL automation, transforms, OCR,
+  snippet library, prompts, vault, expire, privacy mode, drag, inline edit,
+  multi-select, analytics, smart paste, syntax HL, browser extension
 status: pending
 priority: P2
-branch: "main"
-tags: ["macos", "swiftui", "clipboard", "v2", "power-user"]
-blockedBy: [260523-1357-macos-clipboard-manager-mvp]
+branch: main
+tags:
+  - macos
+  - swiftui
+  - clipboard
+  - v2
+  - power-user
+blockedBy:
+  - 260523-1357-macos-clipboard-manager-mvp
 blocks: []
-created: "2026-05-23T09:38:42.062Z"
-createdBy: "ck:plan"
+created: '2026-05-23T09:38:42.062Z'
+createdBy: 'ck:plan'
 source: skill
 ---
 
@@ -31,7 +40,7 @@ Builds on the shipped MVP (`260523-1357-macos-clipboard-manager-mvp/`). Adds 15 
 | 5 | [Prompt Variables](./phase-05-prompt-variables.md) | Pending | 2h |
 | 6 | [Vault — Touch ID Secure Slots](./phase-06-vault-touch-id-secure-slots.md) | Pending | 5h |
 | 7 | [Auto-Expire Sensitive Data](./phase-07-auto-expire-sensitive-data.md) | Pending | 3h |
-| 8 | [Privacy Mode Toggle](./phase-08-privacy-mode-toggle.md) | Pending | 1h |
+| 8 | [Privacy Mode Toggle](./phase-08-privacy-mode-toggle.md) | Pending | Completed |
 | 9 | [Drag from Popover](./phase-09-drag-from-popover.md) | Pending | 2h |
 | 10 | [Inline Text Edit](./phase-10-inline-text-edit.md) | Pending | 2h |
 | 11 | [Multi-Select Bulk Actions](./phase-11-multi-select-bulk-actions.md) | Pending | 3h |

@@ -113,6 +113,10 @@ struct ClipboardPopoverView: View {
             }
             Button("Unpin from slot \(slot)") { store.unpin(slot: slot) }
         }
+        if case .text = item.content {
+            Divider()
+            transformMenu(for: item)
+        }
         Divider()
         Button("Delete", role: .destructive) { store.delete(item) }
     }
@@ -121,4 +125,18 @@ struct ClipboardPopoverView: View {
         store.pinned[slot] == nil ? "Slot \(slot)" : "Slot \(slot) (replace)"
     }
 
+    @ViewBuilder
+    private func transformMenu(for item: ClipboardItem) -> some View {
+        Menu("Transform") {
+            ForEach(TransformCategory.allCases, id: \.rawValue) { category in
+                Menu(category.displayName) {
+                    ForEach(TextTransform.allCases.filter { $0.category == category }) { transform in
+                        Button(transform.displayName) {
+                            store.applyTransform(transform, to: item)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
