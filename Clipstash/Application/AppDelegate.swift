@@ -93,7 +93,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 HUDToast.show("Slot \(slot) empty")
                 return
             }
-            try engine.paste(item, mode: .normal)
+            if let template = item.pinnedTemplate, !template.isEmpty {
+                try engine.pasteRenderedTemplate(template)
+            } else {
+                try engine.paste(item, mode: .normal)
+            }
         } catch {
             Self.log.error("paste slot \(slot, privacy: .public) failed: \(String(describing: error), privacy: .public)")
             HUDToast.show("Paste failed")

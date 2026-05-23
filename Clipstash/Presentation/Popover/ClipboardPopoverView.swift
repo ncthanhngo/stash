@@ -92,6 +92,14 @@ struct ClipboardPopoverView: View {
             }
         }
         if let slot = item.pinnedSlot {
+            Button("Edit template for slot \(slot)…") {
+                TemplateEditor.present(
+                    slot: slot,
+                    currentTemplate: item.pinnedTemplate
+                ) { template in
+                    store.setTemplate(slot: slot, template: template)
+                }
+            }
             Button("Unpin from slot \(slot)") { store.unpin(slot: slot) }
         }
         Divider()

@@ -78,4 +78,13 @@ final class ClipboardStore: ObservableObject {
         try? repository.delete(itemID: item.id)
         refresh()
     }
+
+    func setTemplate(slot: Int, template: String?) {
+        do {
+            try repository.setPinnedTemplate(slot: slot, template: template)
+            refresh()
+        } catch {
+            Self.log.error("setTemplate failed: \(String(describing: error), privacy: .public)")
+        }
+    }
 }

@@ -43,6 +43,48 @@ final class SystemPasteEngine: PasteEngine {
         }
     }
 
+    func pasteRenderedTemplate(_ template: String) throws {
+        let clipboardText = pasteboard.string(forType: .string)
+        let context = RenderContext(date: Date(), clipboard: clipboardText)
+        let result = TemplateRenderer.render(template, context: context)
+
+        let snapshot = restorePrevious ? snapshotPasteboard() : nil
+
+        watcher.suppressNextChange()
+        pasteboard.clearContents()
+        pasteboard.setString(result.text, forType: .string)
+        let postWriteCount = pasteboard.changeCount
+
+        try simulateCmdV()
+
+        if result.cursorOffsetFromEnd > 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+                try? self?.postLeftArrows(count: result.cursorOffsetFromEnd)
+            }
+        }
+
+        if let snapshot {
+            DispatchQueue.main.asyncAfter(deadline: .now() + restoreDelay) { [weak self] in
+                self?.restoreIfUnchanged(snapshot, expectingChangeCount: postWriteCount)
+            }
+        }
+    }
+
+    private func postLeftArrows(count: Int) throws {
+        guard count > 0 else { return }
+        let src = CGEventSource(stateID: .combinedSessionState)
+        for _ in 0..<count {
+            guard
+                let down = CGEvent(keyboardEventSource: src, virtualKey: VirtualKey.leftArrow, keyDown: true),
+                let up = CGEvent(keyboardEventSource: src, virtualKey: VirtualKey.leftArrow, keyDown: false)
+            else {
+                throw PasteError.eventCreationFailed
+            }
+            down.post(tap: .cghidEventTap)
+            up.post(tap: .cghidEventTap)
+        }
+    }
+
     private func write(_ item: ClipboardItem, mode: PasteMode) {
         switch item.content {
         case .text(let s):
