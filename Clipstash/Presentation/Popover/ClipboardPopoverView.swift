@@ -36,16 +36,16 @@ struct ClipboardPopoverView: View {
 
     @ViewBuilder
     private var content: some View {
-        if displayed.isEmpty {
+        if store.matches.isEmpty {
             emptyState
         } else {
             ScrollView {
                 LazyVStack(spacing: 0) {
-                    ForEach(displayed) { item in
-                        HistoryRow(item: item)
+                    ForEach(store.matches) { match in
+                        HistoryRow(item: match.item)
                             .contentShape(Rectangle())
-                            .onTapGesture { store.paste(item) }
-                            .contextMenu { contextMenu(for: item) }
+                            .onTapGesture { store.paste(match.item) }
+                            .contextMenu { contextMenu(for: match.item) }
                         Divider()
                     }
                 }
@@ -102,12 +102,4 @@ struct ClipboardPopoverView: View {
         store.pinned[slot] == nil ? "Slot \(slot)" : "Slot \(slot) (replace)"
     }
 
-    private var displayed: [ClipboardItem] {
-        guard !store.query.isEmpty else { return store.items }
-        let q = store.query.lowercased()
-        return store.items.filter {
-            ($0.textPreview ?? "").lowercased().contains(q)
-                || ($0.sourceAppName ?? "").lowercased().contains(q)
-        }
-    }
 }

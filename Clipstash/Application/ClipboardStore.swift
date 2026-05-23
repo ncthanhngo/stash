@@ -7,6 +7,7 @@ final class ClipboardStore: ObservableObject {
     private static let log = Logger(subsystem: "com.soi.clipstash", category: "store")
 
     @Published private(set) var items: [ClipboardItem] = []
+    @Published private(set) var matches: [FuzzyMatch] = []
     @Published private(set) var pinned: [Int: ClipboardItem] = [:]
     @Published var query: String = ""
 
@@ -15,10 +16,20 @@ final class ClipboardStore: ObservableObject {
 
     private let repository: any ClipboardRepository
     private let pasteEngine: any PasteEngine
+    private var cancellables: Set<AnyCancellable> = []
 
     init(repository: any ClipboardRepository, pasteEngine: any PasteEngine) {
         self.repository = repository
         self.pasteEngine = pasteEngine
+
+        $query
+            .debounce(for: .milliseconds(150), scheduler: RunLoop.main)
+            .removeDuplicates()
+            .combineLatest($items)
+            .sink { [weak self] query, items in
+                self?.matches = FuzzyScorer.rank(items, query: query)
+            }
+            .store(in: &cancellables)
     }
 
     func refresh() {

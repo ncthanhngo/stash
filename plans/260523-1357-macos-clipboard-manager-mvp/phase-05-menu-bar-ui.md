@@ -1,10 +1,12 @@
 ---
 phase: 5
-title: "Menu-bar UI"
-status: pending
+title: Menu-bar UI
+status: completed
 priority: P1
-effort: "6h"
-dependencies: [3, 4]
+effort: 6h
+dependencies:
+  - 3
+  - 4
 ---
 
 # Phase 5: Menu-bar UI

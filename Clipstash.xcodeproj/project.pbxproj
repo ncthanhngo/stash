@@ -25,6 +25,7 @@
 		966452C1C0B9BD07D478AAF9 /* ClipboardRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABFAEE01A1B32299748BC29 /* ClipboardRepository.swift */; };
 		A09C811E8F8217C44567F699 /* HistoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53343DDAA0F56A61086ED81 /* HistoryRow.swift */; };
 		AAEC40FA2FE54E278E78740B /* ClipboardRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD5B5FA7FB7AEF67EA57CC1 /* ClipboardRecord.swift */; };
+		AB0DD119770B2E18F77CEB8F /* FuzzyScorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEC0803D05B415387E693A8 /* FuzzyScorer.swift */; };
 		B0747E520926717B1AAC9BD3 /* HUDToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46FF54F5088BD82DB4BF751 /* HUDToast.swift */; };
 		BFE6952A4AC73F271AE438B9 /* DatabaseFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD47E59802F252174935BA9E /* DatabaseFactory.swift */; };
 		D03C5F81FEBEF8EB96D5902F /* ClipboardWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01958B1DAF9146D2BAE1ECB3 /* ClipboardWatcher.swift */; };
@@ -49,6 +50,7 @@
 		68CACBCAE1C514302FC10B6E /* Migrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Migrations.swift; sourceTree = "<group>"; };
 		691D7BA5DC490FEBB0892AA1 /* Clipstash.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Clipstash.entitlements; sourceTree = "<group>"; };
 		6ABEA07B856CAC4BCBC86DFD /* HotkeyAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyAction.swift; sourceTree = "<group>"; };
+		6BEC0803D05B415387E693A8 /* FuzzyScorer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzyScorer.swift; sourceTree = "<group>"; };
 		6FD5B5FA7FB7AEF67EA57CC1 /* ClipboardRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardRecord.swift; sourceTree = "<group>"; };
 		719C4B72E47724B2DF4A68C5 /* ClipboardStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardStore.swift; sourceTree = "<group>"; };
 		780F8C6FF465978D9774BFDB /* Clipstash.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Clipstash.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -215,6 +217,7 @@
 			children = (
 				7CFB1CDECD400CA71D4AA7E2 /* CapturedContent.swift */,
 				DAFDDE1DCDF1C1BF22896F58 /* ClipboardItem.swift */,
+				6BEC0803D05B415387E693A8 /* FuzzyScorer.swift */,
 				40C5C3F8E190ADC8C7D8163A /* StorageSettings.swift */,
 			);
 			path = Domain;
@@ -319,6 +322,7 @@
 				D03C5F81FEBEF8EB96D5902F /* ClipboardWatcher.swift in Sources */,
 				75A95D6F49BD5CB0F7D78480 /* ClipstashApp.swift in Sources */,
 				BFE6952A4AC73F271AE438B9 /* DatabaseFactory.swift in Sources */,
+				AB0DD119770B2E18F77CEB8F /* FuzzyScorer.swift in Sources */,
 				53D113627BCCC97568749D03 /* GRDBClipboardRepository.swift in Sources */,
 				B0747E520926717B1AAC9BD3 /* HUDToast.swift in Sources */,
 				A09C811E8F8217C44567F699 /* HistoryRow.swift in Sources */,
