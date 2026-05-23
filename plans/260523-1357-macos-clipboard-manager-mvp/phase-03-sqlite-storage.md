@@ -1,10 +1,11 @@
 ---
 phase: 3
-title: "SQLite Storage"
-status: pending
+title: SQLite Storage
+status: completed
 priority: P1
-effort: "4h"
-dependencies: [2]
+effort: 4h
+dependencies:
+  - 2
 ---
 
 # Phase 3: SQLite Storage
