@@ -6,13 +6,13 @@ Project-level instructions. **MUST READ** before any code action. Overrides defa
 
 ## 1. Project
 
-**Clipstash** — local-first macOS menu-bar clipboard manager.
+**Stash** — local-first macOS menu-bar clipboard manager.
 History (text + images), 9 pinned slots via `Option+1..9`, fuzzy search, plain-text paste, snippet variables, privacy exclusions.
 
 - Active plan: `plans/260523-1357-macos-clipboard-manager-mvp/`
 - Docs root: `docs/` (kept in sync after each phase)
 - No first-party cloud, no backend, no login, no telemetry, no network code in this app.
-- **Pinned-slot sync (Phase 10):** plain file I/O into a user-chosen folder (OneDrive / iCloud Drive / Dropbox / Google Drive). The external sync client handles transport — Clipstash itself never opens a socket. History never syncs.
+- **Pinned-slot sync (Phase 10):** plain file I/O into a user-chosen folder (OneDrive / iCloud Drive / Dropbox / Google Drive). The external sync client handles transport — Stash itself never opens a socket. History never syncs.
 
 ---
 
@@ -70,13 +70,13 @@ All code MUST fit into one of these four layers. **Dependencies point inward onl
 ### Folder structure
 
 ```
-Clipstash/
+Stash/
 ├── Domain/            # Entities, value objects, repository protocols
 ├── Application/       # Use-cases, app state, orchestration
 ├── Infrastructure/    # GRDB, NSPasteboard, CGEvent, HotKey impls
 ├── Presentation/      # SwiftUI views, view models, NSPopover host
 ├── Resources/         # Assets, Info.plist, entitlements
-└── ClipstashApp.swift # Composition root
+└── StashApp.swift # Composition root
 ```
 
 Each `phase-*.md` lists files under these folders — do not invent new top-level dirs without updating the plan.
@@ -126,7 +126,7 @@ If none apply, **do not add a backend**.
 
 ```
 backend/
-├── cmd/clipstash-api/main.go     # Entry; wiring only
+├── cmd/stash-api/main.go     # Entry; wiring only
 ├── internal/
 │   ├── domain/                   # Entities, value objects, repo interfaces
 │   ├── usecase/                  # Application services
@@ -190,7 +190,7 @@ These rules are inviolable. Any code that violates them is a defect.
 
 1. **No network code.** No `URLSession`, no `Network.framework`, no sockets, nothing. Adding a `URL` literal that points to a remote host requires explicit user approval.
    - *Phase 10 exception:* writing local files into a user-chosen folder that an external client (OneDrive/iCloud Drive/Dropbox) happens to sync is plain file I/O and does NOT violate this rule. The app never speaks to the cloud directly.
-2. **No telemetry, no analytics, no crash reporters that phone home.** Crash logs stay local (`~/Library/Logs/Clipstash/`).
+2. **No telemetry, no analytics, no crash reporters that phone home.** Crash logs stay local (`~/Library/Logs/Stash/`).
 3. **Never log clipboard content.** Log only: size in bytes, kind (`text|image|fileURL`), source bundle ID. Test that grep of `os.Logger` call sites never references content fields.
 4. **DB is plaintext SQLite on disk.** The user is warned in onboarding. Do not add encryption silently — it's a Phase-out-of-MVP feature.
 5. **Privacy filter is part of the capture path.** Do not bypass `PrivacyFilter.shouldCapture()` for any reason, including "debug mode".
@@ -199,7 +199,7 @@ These rules are inviolable. Any code that violates them is a defect.
 
 ## 8. Testing Requirements
 
-- Every PR / phase landing requires its tests pass: `xcodebuild test -scheme Clipstash` returns 0.
+- Every PR / phase landing requires its tests pass: `xcodebuild test -scheme Stash` returns 0.
 - Use the `InMemoryDatabase` helper for repository tests — never hit the real DB path.
 - Mock at the protocol boundary, not below. Do not mock `NSPasteboard` directly — wrap it in `PasteboardReading` and mock that.
 - No test that reads/writes the system `NSPasteboard.general` — always use a named, isolated pasteboard.
@@ -213,7 +213,7 @@ These rules are inviolable. Any code that violates them is a defect.
   Examples: `feat(capture): handle file URL pasteboard type` · `fix(eviction): respect pinned slot during cleanup`.
 - One logical change per commit. Stage with explicit paths — never `git add .`.
 - Commit messages describe **why**, not **what** the diff already shows.
-- Never commit `.env*`, signing keys, provisioning profiles, `~/Library/Application Support/Clipstash/*`.
+- Never commit `.env*`, signing keys, provisioning profiles, `~/Library/Application Support/Stash/*`.
 - Never amend pushed commits. Never force-push to `main`.
 
 ---
@@ -224,7 +224,7 @@ These are mistakes Claude has historically made on Swift / clean-arch projects. 
 
 1. ❌ **Importing `GRDB` from a domain entity** to "make it work faster". → Define a `record` adapter in `Infrastructure/` that maps the entity.
 2. ❌ **Calling `NSPasteboard.general` from a SwiftUI view** because "it's one line". → Always go through `PasteboardReading` protocol.
-3. ❌ **Creating `Clipstash/Utils/` or `Clipstash/Helpers/`** as a dumping ground. → Put utilities in the layer that owns them; if it's shared, it belongs in `Domain` and must be tested.
+3. ❌ **Creating `Stash/Utils/` or `Stash/Helpers/`** as a dumping ground. → Put utilities in the layer that owns them; if it's shared, it belongs in `Domain` and must be tested.
 4. ❌ **Using `Task { @MainActor in … }` inside business logic** to "fix a warning". → Mark the view model `@MainActor`, keep logic actor-agnostic.
 5. ❌ **Adding `ObservableObject` to non-view types** like repositories. → Repositories return values; the store/view-model owns the `@Published`.
 6. ❌ **Logging `os_log("Item: %@", item)`** which can capture content. → Log `os_log("Captured %{public}@ size=%d", kind, size)`.

@@ -44,14 +44,14 @@ State held in a `@MainActor` `ClipboardStore: ObservableObject` that wraps the r
 
 ## Related Code Files
 
-- Modify: `Clipstash/MenuBar/MenuBarController.swift` — own `NSPopover`
-- Create: `Clipstash/UI/ClipboardPopoverView.swift`
-- Create: `Clipstash/UI/HistoryRow.swift`
-- Create: `Clipstash/UI/PreviewPane.swift`
-- Create: `Clipstash/UI/PinnedSlotsBar.swift`
-- Create: `Clipstash/UI/SettingsWindow.swift`
-- Create: `Clipstash/State/ClipboardStore.swift`
-- Modify: `Clipstash/Paste/PasteEngine.swift` — expose `selectedItem` getter for `Cmd+Shift+V`
+- Modify: `Stash/MenuBar/MenuBarController.swift` — own `NSPopover`
+- Create: `Stash/UI/ClipboardPopoverView.swift`
+- Create: `Stash/UI/HistoryRow.swift`
+- Create: `Stash/UI/PreviewPane.swift`
+- Create: `Stash/UI/PinnedSlotsBar.swift`
+- Create: `Stash/UI/SettingsWindow.swift`
+- Create: `Stash/State/ClipboardStore.swift`
+- Modify: `Stash/Paste/PasteEngine.swift` — expose `selectedItem` getter for `Cmd+Shift+V`
 
 ## Implementation Steps
 

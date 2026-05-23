@@ -21,15 +21,15 @@ Bootstrap Xcode project as a menu-bar-only SwiftUI app, wire SwiftPM dependencie
 ## Architecture
 
 ```
-Clipstash.app
-├── ClipstashApp.swift          # @main, NSApplicationDelegateAdaptor
+Stash.app
+├── StashApp.swift          # @main, NSApplicationDelegateAdaptor
 ├── AppDelegate.swift           # Lifecycle, owns top-level controllers
 ├── MenuBar/
 │   └── MenuBarController.swift # NSStatusItem placeholder
 ├── Resources/
 │   ├── Assets.xcassets         # AppIcon, MenuBarIcon (light/dark)
 │   └── Info.plist              # LSUIElement=YES
-└── Clipstash.entitlements      # Sandbox OFF, automation OK
+└── Stash.entitlements      # Sandbox OFF, automation OK
 ```
 
 SwiftPM dependencies declared in Xcode → Package Dependencies:
@@ -39,39 +39,39 @@ SwiftPM dependencies declared in Xcode → Package Dependencies:
 
 ## Related Code Files
 
-- Create: `Clipstash/ClipstashApp.swift`
-- Create: `Clipstash/AppDelegate.swift`
-- Create: `Clipstash/MenuBar/MenuBarController.swift`
-- Create: `Clipstash/Resources/Info.plist`
-- Create: `Clipstash/Clipstash.entitlements`
-- Create: `Clipstash.xcodeproj` (Xcode-generated)
+- Create: `Stash/StashApp.swift`
+- Create: `Stash/AppDelegate.swift`
+- Create: `Stash/MenuBar/MenuBarController.swift`
+- Create: `Stash/Resources/Info.plist`
+- Create: `Stash/Stash.entitlements`
+- Create: `Stash.xcodeproj` (Xcode-generated)
 - Create: `README.md` (one-liner + build instructions)
 
 ## Implementation Steps
 
-1. **Create Xcode project:** File → New → Project → macOS App. Product name `Clipstash`, interface SwiftUI, language Swift, no Core Data, no tests (added in Phase 9). Bundle ID `com.soi.clipstash`.
+1. **Create Xcode project:** File → New → Project → macOS App. Product name `Stash`, interface SwiftUI, language Swift, no Core Data, no tests (added in Phase 9). Bundle ID `com.soi.stash`.
 2. **Configure as menu-bar app:** in `Info.plist` add `LSUIElement = YES` (Application is agent). Removes Dock icon + main window.
 3. **Set deployment target:** macOS 13.0 in target → General → Minimum Deployments.
-4. **Disable App Sandbox:** in `Clipstash.entitlements` set `com.apple.security.app-sandbox = NO`. Required for global hotkeys, `CGEvent` posting, reading arbitrary pasteboard contents. Document the reason in `README.md`.
+4. **Disable App Sandbox:** in `Stash.entitlements` set `com.apple.security.app-sandbox = NO`. Required for global hotkeys, `CGEvent` posting, reading arbitrary pasteboard contents. Document the reason in `README.md`.
 5. **Add SwiftPM dependencies:** File → Add Package Dependencies → paste URLs for GRDB.swift and HotKey. Pin to current major versions.
 6. **Replace default scene with `AppDelegate`:**
    ```swift
    @main
-   struct ClipstashApp: App {
+   struct StashApp: App {
        @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
        var body: some Scene { Settings { EmptyView() } }
    }
    ```
    `Settings` scene is required to keep the app alive without a window; `EmptyView` keeps it invisible.
-7. **`AppDelegate`** owns a `MenuBarController` instance. `MenuBarController` creates an `NSStatusItem` with system symbol `doc.on.clipboard`, and a single menu item "Quit Clipstash" calling `NSApp.terminate`.
+7. **`AppDelegate`** owns a `MenuBarController` instance. `MenuBarController` creates an `NSStatusItem` with system symbol `doc.on.clipboard`, and a single menu item "Quit Stash" calling `NSApp.terminate`.
 8. **Build & run:** verify menu-bar icon appears, no Dock icon, quit works.
 9. **Commit:** `feat(setup): scaffold menu-bar app with SwiftUI + SwiftPM deps`.
 
 ## Success Criteria
 
-- [ ] `xcodebuild -scheme Clipstash build` succeeds with zero warnings.
+- [ ] `xcodebuild -scheme Stash build` succeeds with zero warnings.
 - [ ] Running app shows status-bar icon only (no Dock entry, no window).
-- [ ] "Quit Clipstash" menu item terminates the process.
+- [ ] "Quit Stash" menu item terminates the process.
 - [ ] GRDB and HotKey resolve and import without errors.
 - [ ] Release archive `.app` bundle is < 20 MB.
 

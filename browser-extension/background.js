@@ -1,15 +1,15 @@
-// Clipstash browser extension — sends selected text via clipstash:// URL scheme
-// Requires the Clipstash macOS app to be installed (handles the URL scheme).
+// Stash browser extension — sends selected text via stash:// URL scheme
+// Requires the Stash macOS app to be installed (handles the URL scheme).
 
-const PARENT_ID = "clipstash-parent";
-const ADD_ID = "clipstash-add";
-const SLOT_PREFIX = "clipstash-slot-";
+const PARENT_ID = "stash-parent";
+const ADD_ID = "stash-add";
+const SLOT_PREFIX = "stash-slot-";
 
 function buildMenu() {
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
       id: PARENT_ID,
-      title: "Send to Clipstash",
+      title: "Send to Stash",
       contexts: ["selection"]
     });
     chrome.contextMenus.create({
@@ -46,8 +46,8 @@ chrome.contextMenus.onClicked.addListener((info) => {
     return;
   }
 
-  const clipstashURL = `clipstash://${urlPath}`;
-  chrome.tabs.create({ url: clipstashURL, active: false }, (tab) => {
+  const stashURL = `stash://${urlPath}`;
+  chrome.tabs.create({ url: stashURL, active: false }, (tab) => {
     if (tab && tab.id) {
       setTimeout(() => chrome.tabs.remove(tab.id, () => void chrome.runtime.lastError), 1500);
     }

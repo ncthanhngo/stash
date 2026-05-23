@@ -1,4 +1,4 @@
-# Clipstash
+# Stash
 
 Local-first macOS menu-bar clipboard manager with snippet library, Touch-ID vault, and browser extension.
 
@@ -17,11 +17,11 @@ In active development. See [`plans/260523-1357-macos-clipboard-manager-mvp/`](pl
 ```bash
 brew install xcodegen
 xcodegen generate
-xcodebuild -scheme Clipstash -configuration Debug build
-open build/Build/Products/Debug/Clipstash.app
+xcodebuild -scheme Stash -configuration Debug build
+open build/Build/Products/Debug/Stash.app
 ```
 
-The project is generated from `project.yml` — do not hand-edit `Clipstash.xcodeproj`.
+The project is generated from `project.yml` — do not hand-edit `Stash.xcodeproj`.
 
 ## Architecture
 
@@ -43,18 +43,18 @@ Local-first. No backend, no telemetry, no login.
 
 ## Browser extension (optional)
 
-A Chromium-family extension adds "Send to Clipstash" to the right-click menu. See [`browser-extension/README.md`](browser-extension/README.md) for install steps. Works in Chrome, Brave, Edge.
+A Chromium-family extension adds "Send to Stash" to the right-click menu. See [`browser-extension/README.md`](browser-extension/README.md) for install steps. Works in Chrome, Brave, Edge.
 
 ## CLI helper
 
 ```bash
-sudo ln -s /path/to/scripts/clipstash /usr/local/bin/clipstash
-clipstash paste 3                       # paste slot 3
-clipstash add "Hello"                   # add text to history
-clipstash add "API_KEY=xxx" --slot 7    # pin to slot 7
+sudo ln -s /path/to/scripts/stash /usr/local/bin/stash
+stash paste 3                       # paste slot 3
+stash add "Hello"                   # add text to history
+stash add "API_KEY=xxx" --slot 7    # pin to slot 7
 ```
 
-Or use the URL scheme directly: `open "clipstash://paste/3"`.
+Or use the URL scheme directly: `open "stash://paste/3"`.
 
 ## License
 

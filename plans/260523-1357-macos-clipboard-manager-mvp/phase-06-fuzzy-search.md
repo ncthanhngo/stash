@@ -36,10 +36,10 @@ ClipboardStore.items   →   HistoryList renders with highlights
 
 ## Related Code Files
 
-- Modify: `Clipstash/State/ClipboardStore.swift` — add `@Published var query: String` and debounce pipeline
-- Modify: `Clipstash/Storage/ClipboardRepository.swift` — implement real `search`
-- Create: `Clipstash/Search/FuzzyScorer.swift`
-- Modify: `Clipstash/UI/HistoryRow.swift` — accept `matchRanges`, draw highlights via `AttributedString`
+- Modify: `Stash/State/ClipboardStore.swift` — add `@Published var query: String` and debounce pipeline
+- Modify: `Stash/Storage/ClipboardRepository.swift` — implement real `search`
+- Create: `Stash/Search/FuzzyScorer.swift`
+- Modify: `Stash/UI/HistoryRow.swift` — accept `matchRanges`, draw highlights via `AttributedString`
 
 ## Implementation Steps
 

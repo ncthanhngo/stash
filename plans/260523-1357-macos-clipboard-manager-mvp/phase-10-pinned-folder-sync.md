@@ -14,7 +14,7 @@ dependencies:
 
 ## Overview
 
-Sync **pinned slots only** between Macs by reading/writing per-slot JSON (and PNG for image slots) inside a user-chosen folder. The user points the app at any folder already synced by an external client — **OneDrive**, **iCloud Drive**, **Dropbox**, **Google Drive**, etc. Clipstash performs only local file I/O; the external client handles transport.
+Sync **pinned slots only** between Macs by reading/writing per-slot JSON (and PNG for image slots) inside a user-chosen folder. The user points the app at any folder already synced by an external client — **OneDrive**, **iCloud Drive**, **Dropbox**, **Google Drive**, etc. Stash performs only local file I/O; the external client handles transport.
 
 History items remain local — they are not synced (avoids SQLite-over-cloud-sync corruption and the high churn of conflict files).
 
@@ -22,7 +22,7 @@ History items remain local — they are not synced (avoids SQLite-over-cloud-syn
 
 | Approach | Verdict |
 |----------|---------|
-| Drop entire `clipstash.sqlite` into OneDrive | ❌ SQLite + cloud-sync = corruption (WAL files, partial copies, conflict copies). Apple/SQLite docs explicitly warn. |
+| Drop entire `stash.sqlite` into OneDrive | ❌ SQLite + cloud-sync = corruption (WAL files, partial copies, conflict copies). Apple/SQLite docs explicitly warn. |
 | CloudKit | ✅ Works, but iCloud-only, needs macOS 14 + Apple iCloud container + ~8h of code. |
 | **Per-slot files in user-chosen folder** | ✅ Cloud-agnostic, no entitlements, ~4h of code, last-write-wins per slot is trivially correct. |
 
@@ -30,7 +30,7 @@ History items remain local — they are not synced (avoids SQLite-over-cloud-syn
 
 ### Functional
 - User opens Settings → Sync → "Pick folder…" → `NSOpenPanel` chooses any folder.
-- App creates `Clipstash/` subfolder inside the chosen folder, writes per-slot files there.
+- App creates `Stash/` subfolder inside the chosen folder, writes per-slot files there.
 - Pin / edit / unpin on Mac A → file changes propagate to Mac B within seconds (latency = OneDrive's, not ours).
 - Conflict files (`slot-3.json (conflicted copy …)`) detected and surfaced in Settings; never silently merged.
 - Sync gracefully disables when folder becomes unavailable (drive ejected, OneDrive paused, folder deleted) — app keeps working locally.
@@ -71,7 +71,7 @@ UI refresh via @Published
 ### Folder layout
 
 ```
-{userChosenFolder}/Clipstash/
+{userChosenFolder}/Stash/
    ├── _meta.json                 # schema version + known devices
    ├── slot-1.json                # text or template slot
    ├── slot-2.json
@@ -128,20 +128,20 @@ Image thumbnail is embedded as base64 so a quick scan of `*.meta.json` is enough
 - Cloud-client conflict files (`slot-3.json (conflicted copy …)`, `slot-3.json.conflict`, etc.) are detected by regex, NEVER auto-merged, and surfaced in Settings with a "Keep mine / Keep theirs" pair of buttons.
 
 ### Device identity
-- `deviceID` = random UUID generated on first run, stored in `UserDefaults` under `clipstash.device.id`.
+- `deviceID` = random UUID generated on first run, stored in `UserDefaults` under `stash.device.id`.
 - `deviceName` = `Host.current().localizedName ?? "Mac"` cached at write time.
 
 ## Related Code Files
 
-- Create: `Clipstash/Infrastructure/Sync/PinnedFolderSync.swift` — coordinator
-- Create: `Clipstash/Infrastructure/Sync/SlotFileFormat.swift` — JSON read/write + atomic file ops
-- Create: `Clipstash/Infrastructure/Sync/FolderWatcher.swift` — `DispatchSource.makeFileSystemObjectSource` wrapper, debounced 300 ms
-- Create: `Clipstash/Infrastructure/Sync/ConflictFileDetector.swift` — regex match against known cloud-client conflict naming
-- Create: `Clipstash/Application/SyncFolderUseCase.swift` — enable / disable / pickFolder / resolveConflict
-- Modify: `Clipstash/Domain/PrivacyFilter.swift` — add `shouldExport(item) -> Bool` (mirrors `shouldCapture` for excluded apps)
-- Modify: `Clipstash/Storage/ClipboardRepository.swift` — Combine subject for pin/unpin/edit events; `applyRemotePin(snapshot)` upsert
-- Modify: `Clipstash/UI/SettingsWindow.swift` — new "Sync" tab (folder path, status, conflict list, device list)
-- Modify: `Clipstash/State/ClipboardStore.swift` — observe sync-coordinator updates, refresh `pinned`
+- Create: `Stash/Infrastructure/Sync/PinnedFolderSync.swift` — coordinator
+- Create: `Stash/Infrastructure/Sync/SlotFileFormat.swift` — JSON read/write + atomic file ops
+- Create: `Stash/Infrastructure/Sync/FolderWatcher.swift` — `DispatchSource.makeFileSystemObjectSource` wrapper, debounced 300 ms
+- Create: `Stash/Infrastructure/Sync/ConflictFileDetector.swift` — regex match against known cloud-client conflict naming
+- Create: `Stash/Application/SyncFolderUseCase.swift` — enable / disable / pickFolder / resolveConflict
+- Modify: `Stash/Domain/PrivacyFilter.swift` — add `shouldExport(item) -> Bool` (mirrors `shouldCapture` for excluded apps)
+- Modify: `Stash/Storage/ClipboardRepository.swift` — Combine subject for pin/unpin/edit events; `applyRemotePin(snapshot)` upsert
+- Modify: `Stash/UI/SettingsWindow.swift` — new "Sync" tab (folder path, status, conflict list, device list)
+- Modify: `Stash/State/ClipboardStore.swift` — observe sync-coordinator updates, refresh `pinned`
 
 ## Implementation Steps
 
@@ -151,7 +151,7 @@ Image thumbnail is embedded as base64 so a quick scan of `*.meta.json` is enough
    - `delete(slot:in:)` removes `slot-N.json` and any `slot-N.meta.json` + `slot-N.png`.
 2. **`FolderWatcher`** wraps `DispatchSource.makeFileSystemObjectSource(fileDescriptor: open(path, O_EVTONLY), eventMask: [.write, .extend, .rename, .delete])`. Coalesces bursts into a single `onChange()` callback after 300 ms idle.
 3. **`PinnedFolderSync`**:
-   - `enable(folderURL)`: create `Clipstash/` subfolder if missing, write/update `_meta.json` with this device entry, run initial reconciliation, start `FolderWatcher`. Persist `folderURL` path (and a bookmark — see §Sandbox below) in `UserDefaults`.
+   - `enable(folderURL)`: create `Stash/` subfolder if missing, write/update `_meta.json` with this device entry, run initial reconciliation, start `FolderWatcher`. Persist `folderURL` path (and a bookmark — see §Sandbox below) in `UserDefaults`.
    - `disable()`: stop watcher, leave files in place.
    - `syncOut(slot, item)`: called when local pinned slot changes. Check `PrivacyFilter.shouldExport(item)` → if false, *also delete the remote file for that slot* (so a previously-synced item from an excluded app is purged). Then `SlotFileFormat.write(...)`. Stamp `updatedAt = now`, `updatedBy = deviceID`.
    - `scanAndApply()`: triggered by `FolderWatcher.onChange`. Read all snapshots. For each slot, compare snapshot's `updatedAt` against local `pinned_template`/`content`'s `updatedAt`. If snapshot is newer AND `updatedBy != ourDeviceID`, call `repo.applyRemotePin(snapshot)`.
@@ -180,7 +180,7 @@ Image thumbnail is embedded as base64 so a quick scan of `*.meta.json` is enough
    - `List(devices)` showing known devices from `_meta.json`.
    - `Section("Conflicts")` listing detected conflicts; each row has "Keep mine" / "Keep theirs" buttons.
    - Stepper `"Don't sync items larger than ___ MB"` bound to `maxSyncBytes` (default 10).
-   - Hint text: *"Pick a folder synced by OneDrive, iCloud Drive, Dropbox or Google Drive. Clipstash writes pinned-slot files into a `Clipstash/` subfolder. History stays on this Mac."*
+   - Hint text: *"Pick a folder synced by OneDrive, iCloud Drive, Dropbox or Google Drive. Stash writes pinned-slot files into a `Stash/` subfolder. History stays on this Mac."*
 9. **Onboarding update** (Phase 9 first-run): add an optional step "Sync pinned slots between Macs (uses your iCloud Drive / OneDrive / Dropbox folder)" — checkbox + folder picker. Default unchecked.
 10. **Logging:** sync events log `slot`, `kind`, `bytes`, `updatedBy`. NEVER log `text`, `template`, or PNG bytes. Add to the grep guard in Phase 9.
 
@@ -204,8 +204,8 @@ Image thumbnail is embedded as base64 so a quick scan of `*.meta.json` is enough
 ## Risk Assessment
 
 - **Risk:** A cloud client we haven't tested produces conflict filenames our regex misses → silent inconsistency. **Mitigation:** at scan time, if any file matches `slot-*` glob but is NOT exactly `slot-N.json` / `slot-N.meta.json` / `slot-N.png`, surface as an "unknown extra file" in Settings instead of ignoring.
-- **Risk:** User picks a non-synced local folder (e.g. `~/Documents/`) and expects multi-device sync. **Mitigation:** Settings hint copy is explicit; show a one-time alert "This folder doesn't look like a cloud-synced folder — Clipstash will still write files here but they won't reach other Macs unless an external sync client (OneDrive/iCloud Drive/Dropbox) is watching it." Detection heuristic: path contains any of `OneDrive`, `iCloud~`, `Dropbox`, `Google Drive` — otherwise warn.
-- **Risk:** Atomic rename across volumes fails (`EXDEV`). **Mitigation:** ensure the tmp file is created inside the same `Clipstash/` subfolder, not in `/tmp`.
+- **Risk:** User picks a non-synced local folder (e.g. `~/Documents/`) and expects multi-device sync. **Mitigation:** Settings hint copy is explicit; show a one-time alert "This folder doesn't look like a cloud-synced folder — Stash will still write files here but they won't reach other Macs unless an external sync client (OneDrive/iCloud Drive/Dropbox) is watching it." Detection heuristic: path contains any of `OneDrive`, `iCloud~`, `Dropbox`, `Google Drive` — otherwise warn.
+- **Risk:** Atomic rename across volumes fails (`EXDEV`). **Mitigation:** ensure the tmp file is created inside the same `Stash/` subfolder, not in `/tmp`.
 - **Risk:** Cloud client truncates filenames or normalises case. **Mitigation:** filenames are short (`slot-1.json`), all-lowercase, ASCII — well within all known sync clients' limits.
 - **Risk:** Image PNG diff causes OneDrive to keep uploading the same bytes after a re-pin of the same image. **Mitigation:** compare SHA-256 before write; skip if unchanged.
 - **Risk:** Two devices share a clock skew > 1 s, breaking LWW intuition. **Mitigation:** use `Date()` (NTP-corrected on macOS by default); document that severe clock drift can cause unexpected wins.

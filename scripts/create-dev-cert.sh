@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-CERT_NAME="Clipstash Dev"
+CERT_NAME="Stash Dev"
 LOGIN_KEYCHAIN="$HOME/Library/Keychains/login.keychain-db"
 
 # Already exists?
@@ -10,7 +10,7 @@ if security find-identity -p codesigning -v "$LOGIN_KEYCHAIN" 2>/dev/null | grep
     exit 0
 fi
 
-WORK_DIR=$(mktemp -d -t clipstash-cert-XXXX)
+WORK_DIR=$(mktemp -d -t stash-cert-XXXX)
 trap "rm -rf $WORK_DIR" EXIT
 
 cat > "$WORK_DIR/openssl.cnf" <<EOF
@@ -34,7 +34,7 @@ openssl req -x509 -newkey rsa:2048 -nodes \
     -keyout "$WORK_DIR/key.pem" -out "$WORK_DIR/cert.pem" \
     -days 3650 -config "$WORK_DIR/openssl.cnf" 2>/dev/null
 
-P12_PASS="clipstash-dev"
+P12_PASS="stash-dev"
 
 echo "==> Packaging into PKCS#12 (legacy format for security CLI compatibility)"
 if openssl pkcs12 -export -name "$CERT_NAME" \

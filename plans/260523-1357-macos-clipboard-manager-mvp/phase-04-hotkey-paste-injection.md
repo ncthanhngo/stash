@@ -44,11 +44,11 @@ User-customisable in Settings (Phase 5); this phase ships defaults.
 
 ## Related Code Files
 
-- Create: `Clipstash/Hotkeys/HotkeyCenter.swift`
-- Create: `Clipstash/Paste/PasteEngine.swift`
-- Create: `Clipstash/Paste/PasteboardRestore.swift`
-- Create: `Clipstash/Permissions/AccessibilityPermission.swift`
-- Modify: `Clipstash/AppDelegate.swift` — instantiate `HotkeyCenter`
+- Create: `Stash/Hotkeys/HotkeyCenter.swift`
+- Create: `Stash/Paste/PasteEngine.swift`
+- Create: `Stash/Paste/PasteboardRestore.swift`
+- Create: `Stash/Permissions/AccessibilityPermission.swift`
+- Modify: `Stash/AppDelegate.swift` — instantiate `HotkeyCenter`
 
 ## Implementation Steps
 

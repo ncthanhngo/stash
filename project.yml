@@ -1,4 +1,4 @@
-name: Clipstash
+name: Stash
 options:
   deploymentTarget:
     macOS: "13.0"
@@ -15,35 +15,35 @@ packages:
     from: 0.2.0
 
 targets:
-  Clipstash:
+  Stash:
     type: application
     platform: macOS
     deploymentTarget: "13.0"
     sources:
-      - path: Clipstash
+      - path: Stash
     info:
-      path: Clipstash/Resources/Info.plist
+      path: Stash/Resources/Info.plist
       properties:
         LSUIElement: YES
-        CFBundleName: Clipstash
-        CFBundleDisplayName: Clipstash
+        CFBundleName: Stash
+        CFBundleDisplayName: Stash
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSHumanReadableCopyright: "Copyright © 2026 soi"
-        NSAppleEventsUsageDescription: "Clipstash uses Apple Events to paste into the active app."
+        NSAppleEventsUsageDescription: "Stash uses Apple Events to paste into the active app."
         CFBundleURLTypes:
-          - CFBundleURLName: com.soi.clipstash
-            CFBundleURLSchemes: [clipstash]
+          - CFBundleURLName: com.soi.stash
+            CFBundleURLSchemes: [stash]
     entitlements:
-      path: Clipstash/Resources/Clipstash.entitlements
+      path: Stash/Resources/Stash.entitlements
       properties:
         com.apple.security.app-sandbox: false
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.soi.clipstash
-        PRODUCT_NAME: Clipstash
+        PRODUCT_BUNDLE_IDENTIFIER: com.soi.stash
+        PRODUCT_NAME: Stash
         CODE_SIGN_STYLE: Manual
-        CODE_SIGN_IDENTITY: "Clipstash Dev"
+        CODE_SIGN_IDENTITY: "Stash Dev"
         DEVELOPMENT_TEAM: ""
         OTHER_CODE_SIGN_FLAGS: "--timestamp=none"
         SWIFT_VERSION: "5.9"
@@ -58,36 +58,36 @@ targets:
       - package: HotKey
         product: HotKey
 
-  ClipstashTests:
+  StashTests:
     type: bundle.unit-test
     platform: macOS
     deploymentTarget: "13.0"
     sources:
-      - path: ClipstashTests
+      - path: StashTests
     dependencies:
-      - target: Clipstash
+      - target: Stash
       - package: GRDB
         product: GRDB
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.soi.clipstash.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.soi.stash.tests
         BUNDLE_LOADER: "$(TEST_HOST)"
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Clipstash.app/Contents/MacOS/Clipstash"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Stash.app/Contents/MacOS/Stash"
         SWIFT_VERSION: "5.9"
         CODE_SIGN_IDENTITY: "-"
         GENERATE_INFOPLIST_FILE: YES
 
 schemes:
-  Clipstash:
+  Stash:
     build:
       targets:
-        Clipstash: all
-        ClipstashTests: [test]
+        Stash: all
+        StashTests: [test]
     run:
       config: Debug
     test:
       config: Debug
       targets:
-        - ClipstashTests
+        - StashTests
     archive:
       config: Release

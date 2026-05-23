@@ -26,7 +26,7 @@ source: skill
 
 Native macOS menu-bar app that captures clipboard history (text + images), exposes 9 pinned slots via `Option+1..9` global hotkeys, supports fuzzy search, paste-as-plain-text (`Cmd+Shift+V`), snippet variables in pinned templates, privacy exclusions for password managers, and optional cross-Mac sync of pinned slots via a user-chosen file-sync folder (OneDrive / iCloud Drive / Dropbox / Google Drive). Local-first; no first-party cloud, no backend, no login.
 
-**Working name:** Clipstash (rename anytime in Phase 1 xcconfig).
+**Working name:** Stash (rename anytime in Phase 1 xcconfig).
 
 **Stack:** SwiftUI · macOS 13+ · GRDB.swift (SQLite) · HotKey (soffes) · ServiceManagement.
 
@@ -76,8 +76,8 @@ Native macOS menu-bar app that captures clipboard history (text + images), expos
 ## Cross-Cutting Decisions
 
 - **Sandbox:** OFF (need global hotkeys + `CGEvent` posting + arbitrary pasteboard reads)
-- **DB location:** `~/Library/Application Support/Clipstash/clipstash.sqlite`
-- **Bundle ID:** `com.soi.clipstash` (placeholder — change in Phase 1)
+- **DB location:** `~/Library/Application Support/Stash/stash.sqlite`
+- **Bundle ID:** `com.soi.stash` (placeholder — change in Phase 1)
 - **Deployment target:** macOS 13.0 (Ventura)
 - **Storage limit:** 500 items OR 100 MB, whichever first (FIFO eviction of non-pinned)
 - **Privacy:** never log clipboard content; no network code anywhere in the app (Phase 10 sync uses plain file I/O — the user's external sync client transports the files)

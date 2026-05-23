@@ -38,11 +38,11 @@ PasteEngine.paste(slot: N):
 
 ## Related Code Files
 
-- Create: `Clipstash/Templating/TemplateRenderer.swift`
-- Create: `Clipstash/Templating/TemplateTokenizer.swift`
-- Modify: `Clipstash/Paste/PasteEngine.swift` — branch on `pinned_template`
-- Modify: `Clipstash/Storage/ClipboardRepository.swift` — `setPinnedTemplate(slot:, template:)`
-- Modify: `Clipstash/UI/PinnedSlotsBar.swift` — edit-slot sheet with template field + variable picker
+- Create: `Stash/Templating/TemplateRenderer.swift`
+- Create: `Stash/Templating/TemplateTokenizer.swift`
+- Modify: `Stash/Paste/PasteEngine.swift` — branch on `pinned_template`
+- Modify: `Stash/Storage/ClipboardRepository.swift` — `setPinnedTemplate(slot:, template:)`
+- Modify: `Stash/UI/PinnedSlotsBar.swift` — edit-slot sheet with template field + variable picker
 
 ## Implementation Steps
 

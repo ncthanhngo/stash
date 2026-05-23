@@ -39,11 +39,11 @@ Polling is chosen over event-based observation because macOS does not publish a 
 
 ## Related Code Files
 
-- Create: `Clipstash/Capture/ClipboardWatcher.swift`
-- Create: `Clipstash/Capture/PasteboardSnapshot.swift`
-- Create: `Clipstash/Models/ClipboardItem.swift`
-- Create: `Clipstash/Models/CapturedContent.swift`
-- Modify: `Clipstash/AppDelegate.swift` — start watcher on launch
+- Create: `Stash/Capture/ClipboardWatcher.swift`
+- Create: `Stash/Capture/PasteboardSnapshot.swift`
+- Create: `Stash/Models/ClipboardItem.swift`
+- Create: `Stash/Models/CapturedContent.swift`
+- Modify: `Stash/AppDelegate.swift` — start watcher on launch
 
 ## Implementation Steps
 

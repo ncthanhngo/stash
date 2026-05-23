@@ -13,13 +13,13 @@ xcodegen generate
 
 echo "==> Building Release"
 xcodebuild \
-    -project Clipstash.xcodeproj \
-    -scheme Clipstash \
+    -project Stash.xcodeproj \
+    -scheme Stash \
     -configuration Release \
     -derivedDataPath build \
     clean build
 
-APP="build/Build/Products/Release/Clipstash.app"
+APP="build/Build/Products/Release/Stash.app"
 if [ -d "$APP" ]; then
     SIZE=$(du -sh "$APP" | cut -f1)
     echo "==> Built $APP ($SIZE)"

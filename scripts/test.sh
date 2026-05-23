@@ -6,8 +6,8 @@ cd "$(dirname "$0")/.."
 xcodegen generate
 
 xcodebuild \
-    -project Clipstash.xcodeproj \
-    -scheme Clipstash \
+    -project Stash.xcodeproj \
+    -scheme Stash \
     -configuration Debug \
     -derivedDataPath build \
     -destination "platform=macOS" \

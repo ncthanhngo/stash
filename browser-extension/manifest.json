@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Clipstash",
+  "name": "Stash",
   "version": "1.0.0",
-  "description": "Send selected text from any page into Clipstash history or pinned slots.",
+  "description": "Send selected text from any page into Stash history or pinned slots.",
   "permissions": ["contextMenus"],
   "host_permissions": ["<all_urls>"],
   "background": {

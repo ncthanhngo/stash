@@ -17,7 +17,7 @@ Persist `ClipboardItem`s to a single SQLite database via GRDB. Enforce FIFO evic
 ## Requirements
 
 - **Functional:** All captured items persist across app restarts. Pinned items survive eviction. Repository operations complete in < 50 ms for typical queries on a 500-item DB.
-- **Non-functional:** DB file under `~/Library/Application Support/Clipstash/`. WAL mode for concurrent reads. No data corruption after kill-9.
+- **Non-functional:** DB file under `~/Library/Application Support/Stash/`. WAL mode for concurrent reads. No data corruption after kill-9.
 
 ## Architecture
 
@@ -59,16 +59,16 @@ CREATE UNIQUE INDEX idx_items_pinned_slot ON clipboard_items(pinned_slot) WHERE 
 
 ## Related Code Files
 
-- Create: `Clipstash/Storage/Database.swift`
-- Create: `Clipstash/Storage/Migrations.swift`
-- Create: `Clipstash/Storage/ClipboardRepository.swift`
-- Modify: `Clipstash/Models/ClipboardItem.swift` — conform to `FetchableRecord`, `PersistableRecord`
-- Modify: `Clipstash/AppDelegate.swift` — instantiate DB, wire watcher → repo
-- Create: `Clipstash/Storage/StorageSettings.swift` — limits (500, 100 MB) as configurable properties
+- Create: `Stash/Storage/Database.swift`
+- Create: `Stash/Storage/Migrations.swift`
+- Create: `Stash/Storage/ClipboardRepository.swift`
+- Modify: `Stash/Models/ClipboardItem.swift` — conform to `FetchableRecord`, `PersistableRecord`
+- Modify: `Stash/AppDelegate.swift` — instantiate DB, wire watcher → repo
+- Create: `Stash/Storage/StorageSettings.swift` — limits (500, 100 MB) as configurable properties
 
 ## Implementation Steps
 
-1. **`Database.swift`** opens a `DatabasePool` at `~/Library/Application Support/Clipstash/clipstash.sqlite`. Create the directory if missing. Enable WAL via GRDB `Configuration.prepareDatabase`.
+1. **`Database.swift`** opens a `DatabasePool` at `~/Library/Application Support/Stash/stash.sqlite`. Create the directory if missing. Enable WAL via GRDB `Configuration.prepareDatabase`.
 2. **`Migrations.swift`** holds the v1 migration creating the table and indexes above. Use GRDB's `DatabaseMigrator`.
 3. **`ClipboardItem` records:** add GRDB conformances. Use a custom `Columns` enum for type-safe queries.
 4. **`ClipboardRepository`:**
@@ -83,7 +83,7 @@ CREATE UNIQUE INDEX idx_items_pinned_slot ON clipboard_items(pinned_slot) WHERE 
 5. **`evictIfNeeded(in db: Database)`:** in one tx, `SELECT COUNT(*), SUM(size_bytes) FROM clipboard_items WHERE is_pinned = 0`. While `count > 500` or `total > 100 MB`, delete the oldest non-pinned row.
 6. **Dedup-on-insert:** if `findByHash` returns an existing non-pinned row, delete it (sliding to front) before inserting the new one — so re-copying an old text bumps it back to the top.
 7. **Wire watcher → repo:** in `AppDelegate`, subscribe `ClipboardWatcher.publisher` to `repo.insert`. Errors logged (without content) and swallowed — never crash the app on a bad capture.
-8. **Backup path on corruption:** if DB open fails, move the corrupt file to `clipstash.sqlite.corrupt-{timestamp}` and start fresh. Non-fatal.
+8. **Backup path on corruption:** if DB open fails, move the corrupt file to `stash.sqlite.corrupt-{timestamp}` and start fresh. Non-fatal.
 
 ## Success Criteria
 

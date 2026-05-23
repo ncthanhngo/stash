@@ -54,17 +54,17 @@ Recognised types that signal "do not record":
 
 ## Related Code Files
 
-- Create: `Clipstash/Privacy/PrivacyFilter.swift`
-- Create: `Clipstash/Privacy/ExclusionList.swift` — defaults + user-defined, persisted in `UserDefaults`
-- Modify: `Clipstash/Capture/ClipboardWatcher.swift` — call filter before snapshot
-- Modify: `Clipstash/UI/SettingsWindow.swift` — Exclusions section (drag-drop, list, remove)
-- Modify: `Clipstash/Paste/PasteEngine.swift` — if pasting from password-manager-originated item, schedule auto-clear
+- Create: `Stash/Privacy/PrivacyFilter.swift`
+- Create: `Stash/Privacy/ExclusionList.swift` — defaults + user-defined, persisted in `UserDefaults`
+- Modify: `Stash/Capture/ClipboardWatcher.swift` — call filter before snapshot
+- Modify: `Stash/UI/SettingsWindow.swift` — Exclusions section (drag-drop, list, remove)
+- Modify: `Stash/Paste/PasteEngine.swift` — if pasting from password-manager-originated item, schedule auto-clear
 
 ## Implementation Steps
 
 1. **`ExclusionList`:**
    - `defaultBundleIDs: Set<String>` (the list above).
-   - `userBundleIDs: Set<String>` — persisted in `UserDefaults` under `clipstash.exclusions.user`.
+   - `userBundleIDs: Set<String>` — persisted in `UserDefaults` under `stash.exclusions.user`.
    - `concealedTypes: Set<String>` — fixed list above.
    - Helpers `add(bundleID:)`, `remove(bundleID:)`, `contains(bundleID:)`, `contains(type:)`.
 2. **`PrivacyFilter.shouldCapture(frontmostBundleID, types) -> Bool`:**
@@ -92,4 +92,4 @@ Recognised types that signal "do not record":
 
 - **Risk:** Bundle ID of a password manager changes across versions, breaking exclusion. **Mitigation:** ship the union of known historical IDs; auto-extend when a new ID writes a `ConcealedType`.
 - **Risk:** False positive blocks legitimate captures from an excluded app the user actually wants. **Mitigation:** show a non-intrusive HUD "Capture skipped (excluded app)" for first N occurrences per session so the user knows the filter fired.
-- **Risk:** User assumes everything is encrypted and stores secrets in pinned slots manually. **Mitigation:** README + first-run note clearly state "Clipstash stores history unencrypted at rest; do not pin secrets".
+- **Risk:** User assumes everything is encrypted and stores secrets in pinned slots manually. **Mitigation:** README + first-run note clearly state "Stash stores history unencrypted at rest; do not pin secrets".
