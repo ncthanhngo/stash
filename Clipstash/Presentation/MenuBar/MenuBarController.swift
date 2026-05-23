@@ -9,9 +9,9 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
     private let settingsController: SettingsWindowController
     private let keyMonitor: PopoverKeyMonitor
 
-    init(store: ClipboardStore, exclusions: ExclusionList, sync: PinnedFolderSync) {
+    init(store: ClipboardStore, exclusions: ExclusionList, sync: PinnedFolderSync, privacyMode: PrivacyModeState) {
         self.store = store
-        self.settingsController = SettingsWindowController(exclusions: exclusions, sync: sync)
+        self.settingsController = SettingsWindowController(exclusions: exclusions, sync: sync, privacyMode: privacyMode)
         self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         self.keyMonitor = PopoverKeyMonitor(store: store)
 
@@ -55,11 +55,20 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
 
     private func configureStatusButton() {
         guard let button = statusItem.button else { return }
-        let image = NSImage(systemSymbolName: "doc.on.clipboard", accessibilityDescription: "Clipstash")
-        image?.isTemplate = true
-        button.image = image
+        button.image = statusImage(paused: false)
         button.target = self
         button.action = #selector(handleClick)
+    }
+
+    func updatePrivacyIcon(paused: Bool) {
+        statusItem.button?.image = statusImage(paused: paused)
+    }
+
+    private func statusImage(paused: Bool) -> NSImage? {
+        let symbol = paused ? "doc.on.clipboard.fill" : "doc.on.clipboard"
+        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Clipstash")
+        image?.isTemplate = !paused
+        return image
     }
 
     @objc private func handleClick() {

@@ -14,6 +14,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var exclusions: ExclusionList?
     private var pinnedFolderSync: PinnedFolderSync?
     private var onboardingController: OnboardingWindowController?
+    private var privacyMode: PrivacyModeState?
+    private var privacyModeSubscription: AnyCancellable?
     private var captureSubscription: AnyCancellable?
     private var accessibilityAlertShown = false
 
@@ -24,6 +26,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
             let exclusions = ExclusionList()
             self.exclusions = exclusions
+
+            let privacyMode = PrivacyModeState()
+            self.privacyMode = privacyMode
 
             let defaults = UserDefaults.standard
             let storedItems = defaults.integer(forKey: "clipstash.maxItems")
@@ -40,6 +45,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 pasteboard: SystemPasteboard(),
                 filterProvider: { [weak exclusions] in
                     exclusions?.currentFilter() ?? .permissive
+                },
+                pauseProvider: { [weak privacyMode] in
+                    privacyMode?.isPaused ?? false
                 }
             )
             clipboardWatcher = watcher
@@ -54,7 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.pinnedFolderSync = sync
             sync.restorePersisted()
 
-            menuBarController = MenuBarController(store: store, exclusions: exclusions, sync: sync)
+            menuBarController = MenuBarController(store: store, exclusions: exclusions, sync: sync, privacyMode: privacyMode)
 
             captureSubscription = watcher.publisher.sink { [weak self] item in
                 self?.handleCaptured(item)
@@ -128,7 +136,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             pasteLatest()
         case .togglePopover:
             menuBarController?.togglePopover()
+        case .togglePrivacyMode:
+            togglePrivacyMode()
         }
+    }
+
+    @MainActor
+    private func togglePrivacyMode() {
+        guard let privacyMode else { return }
+        privacyMode.isPaused.toggle()
+        let kind: HUDToast.Kind = privacyMode.isPaused ? .warning : .info
+        let text = privacyMode.isPaused
+            ? "Capture paused — copying anything won't save"
+            : "Capture resumed"
+        HUDToast.show(text, kind: kind, duration: 1.8)
+        menuBarController?.updatePrivacyIcon(paused: privacyMode.isPaused)
     }
 
     @MainActor

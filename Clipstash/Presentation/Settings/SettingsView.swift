@@ -5,6 +5,7 @@ import ServiceManagement
 struct SettingsView: View {
     @ObservedObject var exclusions: ExclusionList
     @ObservedObject var sync: PinnedFolderSync
+    @ObservedObject var privacyMode: PrivacyModeState
     @AppStorage("clipstash.maxItems") private var maxItems: Int = 500
     @AppStorage("clipstash.maxMB") private var maxMB: Int = 100
     @AppStorage("clipstash.autoDeleteAfterDays") private var autoDeleteAfterDays: Int = 0
@@ -49,6 +50,12 @@ struct SettingsView: View {
 
     private var generalTab: some View {
         Form {
+            Section("Privacy") {
+                Toggle("Pause clipboard capture", isOn: $privacyMode.isPaused)
+                Text("Hotkey: ⇧⌥⌘P — toggle anytime. Status icon changes when paused.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
             Section("Permissions") {
                 HStack {
                     Image(systemName: accessibilityTrusted

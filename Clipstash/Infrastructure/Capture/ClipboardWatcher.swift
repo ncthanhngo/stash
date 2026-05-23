@@ -11,6 +11,7 @@ final class ClipboardWatcher {
     private let batteryInterval: TimeInterval
     private let maxBytes: Int
     private let filterProvider: () -> PrivacyFilter
+    private let pauseProvider: () -> Bool
     private let subject = PassthroughSubject<ClipboardItem, Never>()
     private let captureQueue = DispatchQueue(label: "com.soi.clipstash.capture", qos: .utility)
 
@@ -26,13 +27,15 @@ final class ClipboardWatcher {
         pollInterval: TimeInterval = 0.5,
         batteryPollInterval: TimeInterval = 1.5,
         maxBytes: Int = ClipboardWatcher.defaultMaxBytes,
-        filterProvider: @escaping () -> PrivacyFilter = { .permissive }
+        filterProvider: @escaping () -> PrivacyFilter = { .permissive },
+        pauseProvider: @escaping () -> Bool = { false }
     ) {
         self.pasteboard = pasteboard
         self.baseInterval = pollInterval
         self.batteryInterval = batteryPollInterval
         self.maxBytes = maxBytes
         self.filterProvider = filterProvider
+        self.pauseProvider = pauseProvider
         self.lastChangeCount = pasteboard.changeCount
     }
 
@@ -65,6 +68,7 @@ final class ClipboardWatcher {
     }
 
     private func tick() {
+        guard !pauseProvider() else { return }
         let current = pasteboard.changeCount
         guard current != lastChangeCount else { return }
         lastChangeCount = current

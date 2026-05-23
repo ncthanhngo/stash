@@ -36,6 +36,10 @@ final class HotkeyCenter {
         togglePopoverAlt.keyDownHandler = { [weak self] in self?.handler(.togglePopover) }
         hotKeys.append(togglePopoverAlt)
 
+        let privacy = HotKey(key: .p, modifiers: [.command, .shift, .option])
+        privacy.keyDownHandler = { [weak self] in self?.handler(.togglePrivacyMode) }
+        hotKeys.append(privacy)
+
         Self.log.info("registered \(self.hotKeys.count, privacy: .public) hotkeys")
     }
 

@@ -50,6 +50,7 @@
 		C6F32CD8D320DFE6D00F2872 /* ExclusionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FAE94A527770B22B754B5B /* ExclusionList.swift */; };
 		D03C5F81FEBEF8EB96D5902F /* ClipboardWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01958B1DAF9146D2BAE1ECB3 /* ClipboardWatcher.swift */; };
 		D2E25D8EBFF63D8213ADF01F /* PasteEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ADCF454C4828E097EFF93EA /* PasteEngine.swift */; };
+		D5874468C4E88C4283DF104B /* PrivacyModeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8CC9FAD442A9BF70C1274C /* PrivacyModeState.swift */; };
 		D8B80469542D631B9ED0B244 /* StorageSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C5C3F8E190ADC8C7D8163A /* StorageSettings.swift */; };
 		DA35FE3D87B65F54C6418EB3 /* Migrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68CACBCAE1C514302FC10B6E /* Migrations.swift */; };
 		E3E6C8EF84192B13ED161945 /* HotkeyCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A39F7021E8CC75DDC6F0595 /* HotkeyCenter.swift */; };
@@ -85,6 +86,7 @@
 		2BF00BB622C4DFFECB6F92CA /* OnboardingWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWindow.swift; sourceTree = "<group>"; };
 		2C3E7790545F81FD98B5464A /* PinnedSlotsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedSlotsBar.swift; sourceTree = "<group>"; };
 		3323DE548CA8CD2274F7FA45 /* AccessibilityPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityPrompt.swift; sourceTree = "<group>"; };
+		3F8CC9FAD442A9BF70C1274C /* PrivacyModeState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModeState.swift; sourceTree = "<group>"; };
 		40C5C3F8E190ADC8C7D8163A /* StorageSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageSettings.swift; sourceTree = "<group>"; };
 		42FAE94A527770B22B754B5B /* ExclusionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExclusionList.swift; sourceTree = "<group>"; };
 		44F95D4F706D312E64DADD3E /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 				42FAE94A527770B22B754B5B /* ExclusionList.swift */,
 				6ABEA07B856CAC4BCBC86DFD /* HotkeyAction.swift */,
 				2ADCF454C4828E097EFF93EA /* PasteEngine.swift */,
+				3F8CC9FAD442A9BF70C1274C /* PrivacyModeState.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -478,6 +481,7 @@
 				C2452D64BD2B79A405DAA491 /* PinnedSlotsBar.swift in Sources */,
 				0BD36AA09FD43A51B41EB85F /* PopoverKeyMonitor.swift in Sources */,
 				9A7F9BDFD5FE3C3F1DB10739 /* PrivacyFilter.swift in Sources */,
+				D5874468C4E88C4283DF104B /* PrivacyModeState.swift in Sources */,
 				592B5D9C1FABAB0723CFA001 /* SettingsView.swift in Sources */,
 				147ADE5253153C0E75918523 /* SettingsWindowController.swift in Sources */,
 				438152210B30BEDC268AC0B8 /* SlotFileFormat.swift in Sources */,
