@@ -1,10 +1,11 @@
 ---
 phase: 4
-title: "Hotkey & Paste Injection"
-status: pending
+title: Hotkey & Paste Injection
+status: completed
 priority: P1
-effort: "5h"
-dependencies: [3]
+effort: 5h
+dependencies:
+  - 3
 ---
 
 # Phase 4: Hotkey & Paste Injection

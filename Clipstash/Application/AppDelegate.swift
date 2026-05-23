@@ -10,28 +10,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var repository: (any ClipboardRepository)?
     private var pasteEngine: (any PasteEngine)?
     private var hotkeyCenter: HotkeyCenter?
+    private var store: ClipboardStore?
     private var captureSubscription: AnyCancellable?
 
+    @MainActor
     func applicationDidFinishLaunching(_ notification: Notification) {
         do {
             let pool = try DatabaseFactory.makeShared(at: DatabaseFactory.defaultURL)
             let repo = GRDBClipboardRepository(dbPool: pool)
             self.repository = repo
 
-            menuBarController = MenuBarController()
-
             let watcher = ClipboardWatcher(pasteboard: SystemPasteboard())
-            captureSubscription = watcher.publisher.sink { [weak self] item in
-                self?.handleCaptured(item)
-            }
-            watcher.start()
             clipboardWatcher = watcher
 
             let engine = SystemPasteEngine(watcher: watcher)
             pasteEngine = engine
 
+            let store = ClipboardStore(repository: repo, pasteEngine: engine)
+            self.store = store
+
+            menuBarController = MenuBarController(store: store)
+
+            captureSubscription = watcher.publisher.sink { [weak self] item in
+                self?.handleCaptured(item)
+            }
+            watcher.start()
+
             let center = HotkeyCenter { [weak self] action in
-                self?.handle(action: action)
+                Task { @MainActor in self?.handle(action: action) }
             }
             center.registerDefaults()
             hotkeyCenter = center
@@ -51,28 +57,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         repository = nil
         pasteEngine = nil
         hotkeyCenter = nil
+        store = nil
     }
 
     private func handleCaptured(_ item: ClipboardItem) {
         guard let repo = repository else { return }
         do {
             try repo.insert(item)
+            Task { @MainActor in self.store?.refresh() }
         } catch {
-            Self.log.error("insert failed kind=\(item.kind.rawValue, privacy: .public) error=\(String(describing: error), privacy: .public)")
+            Self.log.error(
+                "insert failed kind=\(item.kind.rawValue, privacy: .public) error=\(String(describing: error), privacy: .public)"
+            )
         }
     }
 
+    @MainActor
     private func handle(action: HotkeyAction) {
         switch action {
         case .pasteSlot(let n):
             pasteFromSlot(n)
         case .plainPaste:
-            HUDToast.show("Open Clipstash to select an item")
+            menuBarController?.togglePopover()
         case .togglePopover:
-            HUDToast.show("Popover coming in Phase 5")
+            menuBarController?.togglePopover()
         }
     }
 
+    @MainActor
     private func pasteFromSlot(_ slot: Int) {
         guard let repo = repository, let engine = pasteEngine else { return }
         do {

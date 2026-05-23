@@ -39,7 +39,7 @@ Native macOS menu-bar app that captures clipboard history (text + images), expos
 | 1 | [Project Setup](./phase-01-project-setup.md) | Completed |
 | 2 | [Pasteboard Capture](./phase-02-pasteboard-capture.md) | Completed |
 | 3 | [SQLite Storage](./phase-03-sqlite-storage.md) | Completed |
-| 4 | [Hotkey & Paste Injection](./phase-04-hotkey-paste-injection.md) | Pending |
+| 4 | [Hotkey & Paste Injection](./phase-04-hotkey-paste-injection.md) | Completed |
 | 5 | [Menu-bar UI](./phase-05-menu-bar-ui.md) | Pending |
 | 6 | [Fuzzy Search](./phase-06-fuzzy-search.md) | Pending |
 | 7 | [Snippet Variables](./phase-07-snippet-variables.md) | Pending |
