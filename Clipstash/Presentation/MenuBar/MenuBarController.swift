@@ -2,24 +2,28 @@ import AppKit
 import SwiftUI
 
 @MainActor
-final class MenuBarController {
+final class MenuBarController: NSObject, NSPopoverDelegate {
     private let statusItem: NSStatusItem
     private let popover: NSPopover
     private let store: ClipboardStore
     private let settingsController: SettingsWindowController
+    private let keyMonitor: PopoverKeyMonitor
 
     init(store: ClipboardStore, exclusions: ExclusionList, sync: PinnedFolderSync) {
         self.store = store
         self.settingsController = SettingsWindowController(exclusions: exclusions, sync: sync)
         self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        self.keyMonitor = PopoverKeyMonitor(store: store)
 
         let popover = NSPopover()
         popover.behavior = .transient
-        popover.contentSize = NSSize(width: 420, height: 560)
+        popover.contentSize = NSSize(width: 420, height: 580)
         popover.contentViewController = NSHostingController(
             rootView: ClipboardPopoverView(store: store)
         )
         self.popover = popover
+        super.init()
+        popover.delegate = self
 
         store.dismissPopover = { [weak self] in
             self?.popover.performClose(nil)
@@ -39,6 +43,14 @@ final class MenuBarController {
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             popover.contentViewController?.view.window?.makeKey()
         }
+    }
+
+    nonisolated func popoverDidShow(_ notification: Notification) {
+        Task { @MainActor in keyMonitor.start() }
+    }
+
+    nonisolated func popoverDidClose(_ notification: Notification) {
+        Task { @MainActor in keyMonitor.stop() }
     }
 
     private func configureStatusButton() {

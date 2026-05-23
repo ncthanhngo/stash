@@ -3,6 +3,7 @@ import AppKit
 
 struct HistoryRow: View {
     let item: ClipboardItem
+    var isSelected: Bool = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -30,7 +31,27 @@ struct HistoryRow: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
+        .background(
+            isSelected
+                ? Color.accentColor.opacity(0.18)
+                : Color.clear
+        )
+        .help(absoluteTimeTooltip)
     }
+
+    private var absoluteTimeTooltip: String {
+        let absolute = HistoryRow.absoluteFormatter.string(from: item.createdAt)
+        let preview = item.textPreview ?? item.content.kind.rawValue
+        let head = String(preview.prefix(80))
+        return "\(absolute)\n\(head)"
+    }
+
+    private static let absoluteFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateStyle = .medium
+        f.timeStyle = .short
+        return f
+    }()
 
     private var iconView: some View {
         ZStack {

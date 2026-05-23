@@ -10,6 +10,7 @@
 		02D48836AB3CE4A8341F7766 /* AccessibilityPermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A420AA2D64C805B8D721E5 /* AccessibilityPermission.swift */; };
 		06937B8E13E1A1870F7086FD /* ClipboardRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89C9EF34E19902A226E2FFC /* ClipboardRepositoryTests.swift */; };
 		0BC5B68A29512752354FB67F /* SlotTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EC2A7280731F371A5BD06C /* SlotTextEditor.swift */; };
+		0BD36AA09FD43A51B41EB85F /* PopoverKeyMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB843B7131AACE1E115A05B /* PopoverKeyMonitor.swift */; };
 		10E74B6BF7D7CCE7C1E91A5A /* SlotFileFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9F6029B1C115B7188F3AE1 /* SlotFileFormatTests.swift */; };
 		117483C5592F4EE18FDE140A /* AccessibilityPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3323DE548CA8CD2274F7FA45 /* AccessibilityPrompt.swift */; };
 		11A5B4704A107F2415397601 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029FA3D7E2B6787A7D1E9505 /* AppDelegate.swift */; };
@@ -31,6 +32,7 @@
 		66505D29162EF66AE7A23EFB /* PinnedFolderSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F74B54EC6CF6100C988663 /* PinnedFolderSync.swift */; };
 		75A95D6F49BD5CB0F7D78480 /* ClipstashApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08886CC925826F82A1DFABAB /* ClipstashApp.swift */; };
 		7AC4A93CDDBE957405AAFF87 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 127CC8B2591DE258777F317F /* GRDB */; };
+		93F8133E2723C2F8D688A6C5 /* OnboardingWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BF00BB622C4DFFECB6F92CA /* OnboardingWindow.swift */; };
 		966452C1C0B9BD07D478AAF9 /* ClipboardRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABFAEE01A1B32299748BC29 /* ClipboardRepository.swift */; };
 		98A02A91092488D2FED58658 /* ContentHasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54A8CF4E7E54A7E79AF81F78 /* ContentHasher.swift */; };
 		9A7F9BDFD5FE3C3F1DB10739 /* PrivacyFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AA7EC5743198B3CCEE68E31 /* PrivacyFilter.swift */; };
@@ -80,6 +82,7 @@
 		17A420AA2D64C805B8D721E5 /* AccessibilityPermission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityPermission.swift; sourceTree = "<group>"; };
 		209C966ACF18D974B301D2A2 /* FuzzyScorerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzyScorerTests.swift; sourceTree = "<group>"; };
 		2ADCF454C4828E097EFF93EA /* PasteEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteEngine.swift; sourceTree = "<group>"; };
+		2BF00BB622C4DFFECB6F92CA /* OnboardingWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWindow.swift; sourceTree = "<group>"; };
 		2C3E7790545F81FD98B5464A /* PinnedSlotsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedSlotsBar.swift; sourceTree = "<group>"; };
 		3323DE548CA8CD2274F7FA45 /* AccessibilityPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityPrompt.swift; sourceTree = "<group>"; };
 		40C5C3F8E190ADC8C7D8163A /* StorageSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageSettings.swift; sourceTree = "<group>"; };
@@ -104,6 +107,7 @@
 		AD1D10771F6EFECDF2BDF447 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AF25575CA44DDA3041E753EA /* PasteboardReading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardReading.swift; sourceTree = "<group>"; };
 		B9D9B3DC750E7195BC618D4C /* TemplateTokenizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateTokenizer.swift; sourceTree = "<group>"; };
+		BCB843B7131AACE1E115A05B /* PopoverKeyMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverKeyMonitor.swift; sourceTree = "<group>"; };
 		C46FF54F5088BD82DB4BF751 /* HUDToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDToast.swift; sourceTree = "<group>"; };
 		C4A29DCC1ECBE0E34CDB3BB2 /* SystemPasteEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPasteEngine.swift; sourceTree = "<group>"; };
 		D53343DDAA0F56A61086ED81 /* HistoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRow.swift; sourceTree = "<group>"; };
@@ -149,6 +153,14 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		06A64AF95F10BDA5DBE5F747 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				2BF00BB622C4DFFECB6F92CA /* OnboardingWindow.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		12B68C838F47DF9FEE7A2AFB /* Storage */ = {
 			isa = PBXGroup;
 			children = (
@@ -187,6 +199,7 @@
 			children = (
 				A846AA8F3EC0F4C059AD8CD5 /* HUD */,
 				998A22FC7960F6073A041F3C /* MenuBar */,
+				06A64AF95F10BDA5DBE5F747 /* Onboarding */,
 				5A84EBD0ECF63CCD952912FA /* Popover */,
 				01A517D1FD3FA65E8CCF20C2 /* Settings */,
 				635C2718AD486CB80ED4B6C6 /* Templates */,
@@ -200,6 +213,7 @@
 				154B9C45CEDF9AD0A40FCFFC /* ClipboardPopoverView.swift */,
 				D53343DDAA0F56A61086ED81 /* HistoryRow.swift */,
 				2C3E7790545F81FD98B5464A /* PinnedSlotsBar.swift */,
+				BCB843B7131AACE1E115A05B /* PopoverKeyMonitor.swift */,
 				D8EC2A7280731F371A5BD06C /* SlotTextEditor.swift */,
 			);
 			path = Popover;
@@ -457,10 +471,12 @@
 				E3E6C8EF84192B13ED161945 /* HotkeyCenter.swift in Sources */,
 				343D52105315F9ECC1C8D5EF /* MenuBarController.swift in Sources */,
 				DA35FE3D87B65F54C6418EB3 /* Migrations.swift in Sources */,
+				93F8133E2723C2F8D688A6C5 /* OnboardingWindow.swift in Sources */,
 				D2E25D8EBFF63D8213ADF01F /* PasteEngine.swift in Sources */,
 				2938B50AAC42B061628BB8F8 /* PasteboardReading.swift in Sources */,
 				66505D29162EF66AE7A23EFB /* PinnedFolderSync.swift in Sources */,
 				C2452D64BD2B79A405DAA491 /* PinnedSlotsBar.swift in Sources */,
+				0BD36AA09FD43A51B41EB85F /* PopoverKeyMonitor.swift in Sources */,
 				9A7F9BDFD5FE3C3F1DB10739 /* PrivacyFilter.swift in Sources */,
 				592B5D9C1FABAB0723CFA001 /* SettingsView.swift in Sources */,
 				147ADE5253153C0E75918523 /* SettingsWindowController.swift in Sources */,

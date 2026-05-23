@@ -13,6 +13,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var store: ClipboardStore?
     private var exclusions: ExclusionList?
     private var pinnedFolderSync: PinnedFolderSync?
+    private var onboardingController: OnboardingWindowController?
     private var captureSubscription: AnyCancellable?
     private var accessibilityAlertShown = false
 
@@ -20,11 +21,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         do {
             let pool = try DatabaseFactory.makeShared(at: DatabaseFactory.defaultURL)
-            let repo = GRDBClipboardRepository(dbPool: pool)
-            self.repository = repo
 
             let exclusions = ExclusionList()
             self.exclusions = exclusions
+
+            let defaults = UserDefaults.standard
+            let storedItems = defaults.integer(forKey: "clipstash.maxItems")
+            let storedMB = defaults.integer(forKey: "clipstash.maxMB")
+            let storageSettings = StorageSettings(
+                maxItems: storedItems > 0 ? storedItems : 500,
+                maxBytes: (storedMB > 0 ? storedMB : 100) * 1024 * 1024,
+                autoDeleteAfterDays: defaults.integer(forKey: "clipstash.autoDeleteAfterDays")
+            )
+            let repo = GRDBClipboardRepository(dbPool: pool, settings: storageSettings)
+            self.repository = repo
 
             let watcher = ClipboardWatcher(
                 pasteboard: SystemPasteboard(),
@@ -63,7 +73,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    @MainActor
     private func verifyAccessibility() {
+        let onboarding = OnboardingWindowController()
+        onboardingController = onboarding
+
+        if !onboarding.hasShownBefore {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.onboardingController?.show()
+            }
+            return
+        }
+
         AccessibilityPermission.requestIfNeeded()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             guard !AccessibilityPermission.isTrusted() else { return }
@@ -103,11 +124,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         switch action {
         case .pasteSlot(let n):
             pasteFromSlot(n)
-        case .plainPaste:
-            menuBarController?.togglePopover()
+        case .pasteLatestPlainText:
+            pasteLatest()
         case .togglePopover:
             menuBarController?.togglePopover()
         }
+    }
+
+    @MainActor
+    private func pasteLatest() {
+        guard let store else { return }
+        store.refresh()
+        guard !store.items.isEmpty else {
+            HUDToast.show("Clipboard history empty", kind: .info)
+            return
+        }
+        store.pasteLatest()
     }
 
     @MainActor

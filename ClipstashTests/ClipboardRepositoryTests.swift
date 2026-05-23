@@ -52,7 +52,7 @@ final class ClipboardRepositoryTests: XCTestCase {
     }
 
     func testEvictionRespectsItemLimit() throws {
-        let settings = StorageSettings(maxItems: 5, maxBytes: 1_000_000)
+        let settings = StorageSettings(maxItems: 5, maxBytes: 1_000_000, autoDeleteAfterDays: 0)
         let repo = try InMemoryDatabase.makeRepository(settings: settings)
         for i in 0..<10 {
             try repo.insert(Self.makeItem("item-\(i)"))
@@ -63,7 +63,7 @@ final class ClipboardRepositoryTests: XCTestCase {
     }
 
     func testEvictionPreservesPinnedItems() throws {
-        let settings = StorageSettings(maxItems: 3, maxBytes: 1_000_000)
+        let settings = StorageSettings(maxItems: 3, maxBytes: 1_000_000, autoDeleteAfterDays: 0)
         let repo = try InMemoryDatabase.makeRepository(settings: settings)
         let pinnedItem = Self.makeItem("keep-me")
         try repo.insert(pinnedItem)

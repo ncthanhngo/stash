@@ -7,7 +7,9 @@ struct SettingsView: View {
     @ObservedObject var sync: PinnedFolderSync
     @AppStorage("clipstash.maxItems") private var maxItems: Int = 500
     @AppStorage("clipstash.maxMB") private var maxMB: Int = 100
+    @AppStorage("clipstash.autoDeleteAfterDays") private var autoDeleteAfterDays: Int = 0
     @AppStorage("clipstash.restorePrevious") private var restorePrevious: Bool = true
+    @AppStorage("clipstash.stickyPopover") private var stickyPopover: Bool = false
     @State private var launchAtLogin: Bool = SMAppService.mainApp.status == .enabled
     @State private var accessibilityTrusted: Bool = AccessibilityPermission.isTrusted()
 
@@ -27,9 +29,17 @@ struct SettingsView: View {
             Section("Limits (applies on next launch)") {
                 Stepper("Max items: \(maxItems)", value: $maxItems, in: 50...2000, step: 50)
                 Stepper("Max size: \(maxMB) MB", value: $maxMB, in: 10...1024, step: 10)
+                Stepper(
+                    autoDeleteAfterDays == 0
+                        ? "Auto-delete: never"
+                        : "Auto-delete after \(autoDeleteAfterDays) day\(autoDeleteAfterDays == 1 ? "" : "s")",
+                    value: $autoDeleteAfterDays,
+                    in: 0...365,
+                    step: 1
+                )
             }
             Section {
-                Text("Whichever limit is hit first triggers FIFO eviction of non-pinned items. Pinned slots are never evicted.")
+                Text("FIFO eviction fires whichever hits first (count, size, or age). Pinned slots are never evicted.")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -69,14 +79,22 @@ struct SettingsView: View {
             }
             Section("Paste behaviour") {
                 Toggle("Restore previous clipboard after paste", isOn: $restorePrevious)
+                Toggle("Keep popover open after paste (sticky)", isOn: $stickyPopover)
             }
             Section("Hotkeys") {
                 LabeledContent("Paste slot 1–9", value: "⌥1 … ⌥9")
-                LabeledContent("Plain-text paste", value: "⇧⌘V")
-                LabeledContent("Toggle popover", value: "⇧⌘C")
+                LabeledContent("Paste most-recent (plain)", value: "⇧⌘V")
+                LabeledContent("Toggle popover", value: "⇧⌘C  /  ⇧⌥⌘V")
+            }
+            Section("Help") {
+                Button("Show welcome window again") { showOnboarding() }
             }
         }
         .formStyle(.grouped)
+    }
+
+    private func showOnboarding() {
+        OnboardingWindowController().show()
     }
 
     private func toggleLaunchAtLogin(_ enable: Bool) {

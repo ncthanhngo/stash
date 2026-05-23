@@ -41,15 +41,24 @@ struct ClipboardPopoverView: View {
         if store.matches.isEmpty {
             emptyState
         } else {
-            ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(store.matches) { match in
-                        HistoryRow(item: match.item)
-                            .contentShape(Rectangle())
-                            .onTapGesture { store.paste(match.item) }
-                            .contextMenu { contextMenu(for: match.item) }
-                        Divider()
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(Array(store.matches.enumerated()), id: \.element.id) { index, match in
+                            HistoryRow(item: match.item, isSelected: index == store.selectedIndex)
+                                .id(index)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    store.selectedIndex = index
+                                    store.paste(match.item)
+                                }
+                                .contextMenu { contextMenu(for: match.item) }
+                            Divider()
+                        }
                     }
+                }
+                .onChange(of: store.selectedIndex) { index in
+                    withAnimation { proxy.scrollTo(index, anchor: .center) }
                 }
             }
         }

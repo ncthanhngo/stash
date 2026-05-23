@@ -7,7 +7,8 @@ final class ClipboardWatcher {
     private static let defaultMaxBytes = 50 * 1024 * 1024
 
     private let pasteboard: PasteboardReading
-    private let pollInterval: TimeInterval
+    private let baseInterval: TimeInterval
+    private let batteryInterval: TimeInterval
     private let maxBytes: Int
     private let filterProvider: () -> PrivacyFilter
     private let subject = PassthroughSubject<ClipboardItem, Never>()
@@ -23,23 +24,35 @@ final class ClipboardWatcher {
     init(
         pasteboard: PasteboardReading,
         pollInterval: TimeInterval = 0.5,
+        batteryPollInterval: TimeInterval = 1.5,
         maxBytes: Int = ClipboardWatcher.defaultMaxBytes,
         filterProvider: @escaping () -> PrivacyFilter = { .permissive }
     ) {
         self.pasteboard = pasteboard
-        self.pollInterval = pollInterval
+        self.baseInterval = pollInterval
+        self.batteryInterval = batteryPollInterval
         self.maxBytes = maxBytes
         self.filterProvider = filterProvider
         self.lastChangeCount = pasteboard.changeCount
     }
 
     func start() {
-        guard timer == nil else { return }
-        let timer = Timer(timeInterval: pollInterval, repeats: true) { [weak self] _ in
+        scheduleTimer()
+    }
+
+    private func scheduleTimer() {
+        timer?.invalidate()
+        let interval = currentInterval()
+        let timer = Timer(timeInterval: interval, repeats: true) { [weak self] _ in
             self?.tick()
         }
         RunLoop.main.add(timer, forMode: .common)
         self.timer = timer
+        Self.log.debug("polling interval=\(interval, privacy: .public)s")
+    }
+
+    private func currentInterval() -> TimeInterval {
+        ProcessInfo.processInfo.isLowPowerModeEnabled ? batteryInterval : baseInterval
     }
 
     func stop() {

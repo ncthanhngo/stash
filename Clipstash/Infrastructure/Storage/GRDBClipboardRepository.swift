@@ -133,6 +133,16 @@ final class GRDBClipboardRepository: ClipboardRepository {
     }
 
     private func evictIfNeeded(in db: Database) throws {
+        if settings.autoDeleteAfterDays > 0 {
+            let cutoff = Int64(
+                (Date().timeIntervalSince1970 - Double(settings.autoDeleteAfterDays) * 86_400) * 1000
+            )
+            try db.execute(
+                sql: "DELETE FROM clipboard_items WHERE is_pinned = 0 AND created_at < ?",
+                arguments: [cutoff]
+            )
+        }
+
         var count = try Int.fetchOne(
             db, sql: "SELECT COUNT(*) FROM clipboard_items WHERE is_pinned = 0"
         ) ?? 0

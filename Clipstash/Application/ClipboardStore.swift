@@ -10,9 +10,14 @@ final class ClipboardStore: ObservableObject {
     @Published private(set) var matches: [FuzzyMatch] = []
     @Published private(set) var pinned: [Int: ClipboardItem] = [:]
     @Published var query: String = ""
+    @Published var selectedIndex: Int = 0
 
     var dismissPopover: (() -> Void)?
     var openSettings: (() -> Void)?
+
+    var stickyPopover: Bool {
+        UserDefaults.standard.bool(forKey: "clipstash.stickyPopover")
+    }
 
     private let repository: any ClipboardRepository
     private let pasteEngine: any PasteEngine
@@ -28,8 +33,43 @@ final class ClipboardStore: ObservableObject {
             .combineLatest($items)
             .sink { [weak self] query, items in
                 self?.matches = FuzzyScorer.rank(items, query: query)
+                self?.selectedIndex = 0
             }
             .store(in: &cancellables)
+    }
+
+    func pasteLatest(mode: PasteMode = .plainText) {
+        guard let item = items.first else {
+            return
+        }
+        performPaste(item, mode: mode)
+    }
+
+    func pasteSelected() {
+        guard !matches.isEmpty else { return }
+        let index = max(0, min(selectedIndex, matches.count - 1))
+        paste(matches[index].item)
+    }
+
+    func deleteSelected() {
+        guard !matches.isEmpty else { return }
+        let index = max(0, min(selectedIndex, matches.count - 1))
+        delete(matches[index].item)
+    }
+
+    func pinSelectedToSlot(_ slot: Int) {
+        guard !matches.isEmpty else { return }
+        let index = max(0, min(selectedIndex, matches.count - 1))
+        pin(matches[index].item, slot: slot)
+    }
+
+    func moveSelectionDown() {
+        guard !matches.isEmpty else { return }
+        selectedIndex = min(selectedIndex + 1, matches.count - 1)
+    }
+
+    func moveSelectionUp() {
+        selectedIndex = max(selectedIndex - 1, 0)
     }
 
     func refresh() {
@@ -46,7 +86,9 @@ final class ClipboardStore: ObservableObject {
     }
 
     func paste(_ item: ClipboardItem, mode: PasteMode = .normal) {
-        dismissPopover?()
+        if !stickyPopover {
+            dismissPopover?()
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
             self?.performPaste(item, mode: mode)
         }

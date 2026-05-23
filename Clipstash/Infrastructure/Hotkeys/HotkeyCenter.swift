@@ -25,12 +25,16 @@ final class HotkeyCenter {
         }
 
         let plain = HotKey(key: .v, modifiers: [.command, .shift])
-        plain.keyDownHandler = { [weak self] in self?.handler(.plainPaste) }
+        plain.keyDownHandler = { [weak self] in self?.handler(.pasteLatestPlainText) }
         hotKeys.append(plain)
 
         let toggle = HotKey(key: .c, modifiers: [.command, .shift])
         toggle.keyDownHandler = { [weak self] in self?.handler(.togglePopover) }
         hotKeys.append(toggle)
+
+        let togglePopoverAlt = HotKey(key: .v, modifiers: [.command, .shift, .option])
+        togglePopoverAlt.keyDownHandler = { [weak self] in self?.handler(.togglePopover) }
+        hotKeys.append(togglePopoverAlt)
 
         Self.log.info("registered \(self.hotKeys.count, privacy: .public) hotkeys")
     }
