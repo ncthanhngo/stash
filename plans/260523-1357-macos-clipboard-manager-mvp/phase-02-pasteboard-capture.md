@@ -1,10 +1,11 @@
 ---
 phase: 2
-title: "Pasteboard Capture"
-status: pending
+title: Pasteboard Capture
+status: completed
 priority: P1
-effort: "4h"
-dependencies: [1]
+effort: 4h
+dependencies:
+  - 1
 ---
 
 # Phase 2: Pasteboard Capture

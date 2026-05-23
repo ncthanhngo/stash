@@ -7,19 +7,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var menuBarController: MenuBarController?
     private var clipboardWatcher: ClipboardWatcher?
+    private var repository: (any ClipboardRepository)?
     private var captureSubscription: AnyCancellable?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        menuBarController = MenuBarController()
+        do {
+            let pool = try DatabaseFactory.makeShared(at: DatabaseFactory.defaultURL)
+            let repo = GRDBClipboardRepository(dbPool: pool)
+            self.repository = repo
 
-        let watcher = ClipboardWatcher(pasteboard: SystemPasteboard())
-        captureSubscription = watcher.publisher.sink { item in
-            Self.log.debug(
-                "emit \(item.kind.rawValue, privacy: .public) size=\(item.sizeBytes, privacy: .public)"
-            )
+            menuBarController = MenuBarController()
+
+            let watcher = ClipboardWatcher(pasteboard: SystemPasteboard())
+            captureSubscription = watcher.publisher.sink { [weak self] item in
+                guard let repo = self?.repository else { return }
+                do {
+                    try repo.insert(item)
+                } catch {
+                    Self.log.error(
+                        "insert failed kind=\(item.kind.rawValue, privacy: .public) error=\(String(describing: error), privacy: .public)"
+                    )
+                }
+            }
+            watcher.start()
+            clipboardWatcher = watcher
+        } catch {
+            Self.log.error("startup failed: \(String(describing: error), privacy: .public)")
         }
-        watcher.start()
-        clipboardWatcher = watcher
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -27,5 +41,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         captureSubscription?.cancel()
         clipboardWatcher = nil
         menuBarController = nil
+        repository = nil
     }
 }
