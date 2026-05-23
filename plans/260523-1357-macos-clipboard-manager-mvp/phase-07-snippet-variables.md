@@ -1,10 +1,11 @@
 ---
 phase: 7
-title: "Snippet Variables"
-status: pending
+title: Snippet Variables
+status: completed
 priority: P2
-effort: "4h"
-dependencies: [4]
+effort: 4h
+dependencies:
+  - 4
 ---
 
 # Phase 7: Snippet Variables

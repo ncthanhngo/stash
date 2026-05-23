@@ -9,6 +9,7 @@ final class ClipboardWatcher {
     private let pasteboard: PasteboardReading
     private let pollInterval: TimeInterval
     private let maxBytes: Int
+    private let filterProvider: () -> PrivacyFilter
     private let subject = PassthroughSubject<ClipboardItem, Never>()
     private let captureQueue = DispatchQueue(label: "com.soi.clipstash.capture", qos: .utility)
 
@@ -22,11 +23,13 @@ final class ClipboardWatcher {
     init(
         pasteboard: PasteboardReading,
         pollInterval: TimeInterval = 0.5,
-        maxBytes: Int = ClipboardWatcher.defaultMaxBytes
+        maxBytes: Int = ClipboardWatcher.defaultMaxBytes,
+        filterProvider: @escaping () -> PrivacyFilter = { .permissive }
     ) {
         self.pasteboard = pasteboard
         self.pollInterval = pollInterval
         self.maxBytes = maxBytes
+        self.filterProvider = filterProvider
         self.lastChangeCount = pasteboard.changeCount
     }
 
@@ -55,6 +58,16 @@ final class ClipboardWatcher {
 
         if let suppressed = suppressedChangeCount, suppressed == current {
             suppressedChangeCount = nil
+            return
+        }
+
+        let (frontmostID, _) = pasteboard.frontmostAppInfo()
+        let types = pasteboard.currentTypes()
+        let filter = filterProvider()
+        guard filter.shouldCapture(bundleID: frontmostID, types: types) else {
+            Self.log.info(
+                "filter blocked capture source=\(frontmostID ?? "unknown", privacy: .public)"
+            )
             return
         }
 

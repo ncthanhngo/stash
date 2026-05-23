@@ -11,6 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var pasteEngine: (any PasteEngine)?
     private var hotkeyCenter: HotkeyCenter?
     private var store: ClipboardStore?
+    private var exclusions: ExclusionList?
     private var captureSubscription: AnyCancellable?
 
     @MainActor
@@ -20,7 +21,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let repo = GRDBClipboardRepository(dbPool: pool)
             self.repository = repo
 
-            let watcher = ClipboardWatcher(pasteboard: SystemPasteboard())
+            let exclusions = ExclusionList()
+            self.exclusions = exclusions
+
+            let watcher = ClipboardWatcher(
+                pasteboard: SystemPasteboard(),
+                filterProvider: { [weak exclusions] in
+                    exclusions?.currentFilter() ?? .permissive
+                }
+            )
             clipboardWatcher = watcher
 
             let engine = SystemPasteEngine(watcher: watcher)
@@ -29,7 +38,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let store = ClipboardStore(repository: repo, pasteEngine: engine)
             self.store = store
 
-            menuBarController = MenuBarController(store: store)
+            menuBarController = MenuBarController(store: store, exclusions: exclusions)
 
             captureSubscription = watcher.publisher.sink { [weak self] item in
                 self?.handleCaptured(item)
@@ -58,6 +67,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         pasteEngine = nil
         hotkeyCenter = nil
         store = nil
+        exclusions = nil
     }
 
     private func handleCaptured(_ item: ClipboardItem) {
