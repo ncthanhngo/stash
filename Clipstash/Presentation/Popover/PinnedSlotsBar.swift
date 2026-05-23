@@ -33,6 +33,10 @@ private struct SlotChip: View {
         .buttonStyle(.plain)
         .contextMenu { contextMenu }
         .help(tooltip)
+        .onDrag {
+            guard let item else { return NSItemProvider() }
+            return DragPayload.provider(for: item)
+        }
     }
 
     private var chipBody: some View {

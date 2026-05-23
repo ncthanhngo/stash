@@ -37,6 +37,7 @@ struct HistoryRow: View {
                 : Color.clear
         )
         .help(absoluteTimeTooltip)
+        .onDrag { DragPayload.provider(for: item) }
     }
 
     private var absoluteTimeTooltip: String {

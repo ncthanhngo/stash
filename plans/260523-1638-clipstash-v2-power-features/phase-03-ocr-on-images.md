@@ -1,9 +1,9 @@
 ---
 phase: 3
-title: "OCR on Images"
-status: pending
+title: OCR on Images
+status: completed
 priority: P1
-effort: "2h"
+effort: 2h
 dependencies: []
 ---
 
