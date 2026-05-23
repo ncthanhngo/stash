@@ -1,9 +1,9 @@
 ---
 phase: 13
-title: "Smart Paste Detection"
-status: pending
+title: Smart Paste Detection
+status: completed
 priority: P3
-effort: "5h"
+effort: 5h
 dependencies: []
 ---
 

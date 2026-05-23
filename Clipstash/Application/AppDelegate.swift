@@ -17,6 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var privacyMode: PrivacyModeState?
     private var privacyModeSubscription: AnyCancellable?
     private var sensitiveSweeper: SensitiveSweeper?
+    private var urlSchemeHandler: URLSchemeHandler?
     private var captureSubscription: AnyCancellable?
     private var accessibilityAlertShown = false
 
@@ -79,6 +80,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             sweeper.start()
             sensitiveSweeper = sweeper
 
+            if let menuBar = menuBarController {
+                urlSchemeHandler = URLSchemeHandler(
+                    repository: repo,
+                    pasteEngine: engine,
+                    menuBarController: menuBar
+                )
+            }
+
             captureSubscription = watcher.publisher.sink { [weak self] item in
                 self?.handleCaptured(item)
             }
@@ -112,6 +121,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             guard !AccessibilityPermission.isTrusted() else { return }
             AccessibilityPrompt.showRequiredAlert()
+        }
+    }
+
+    @MainActor
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls {
+            urlSchemeHandler?.handle(url)
         }
     }
 

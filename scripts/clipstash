@@ -1,0 +1,60 @@
+#!/bin/bash
+# clipstash — shell wrapper around the clipstash:// URL scheme
+# Install: sudo ln -s /path/to/this/file /usr/local/bin/clipstash
+
+set -euo pipefail
+
+usage() {
+    cat <<EOF
+Usage:
+  clipstash open                       — open the popover
+  clipstash paste <1-9>                — paste slot N to frontmost app
+  clipstash add "<text>" [--slot N]    — add text to history (or pin to slot)
+
+Examples:
+  clipstash paste 3
+  clipstash add "Hello world"
+  clipstash add "API_KEY=xxx" --slot 7
+EOF
+    exit 1
+}
+
+[ $# -lt 1 ] && usage
+
+cmd="$1"; shift
+case "$cmd" in
+    open)
+        open "clipstash://open"
+        ;;
+    paste)
+        [ $# -ne 1 ] && usage
+        slot="$1"
+        open "clipstash://paste/$slot"
+        ;;
+    add)
+        [ $# -lt 1 ] && usage
+        text="$1"; shift
+        slot=""
+        while [ $# -gt 0 ]; do
+            case "$1" in
+                --slot)
+                    slot="$2"; shift 2;;
+                *)
+                    usage;;
+            esac
+        done
+        encoded=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$text")
+        if [ -n "$slot" ]; then
+            open "clipstash://add?text=$encoded&slot=$slot"
+        else
+            open "clipstash://add?text=$encoded"
+        fi
+        ;;
+    -h|--help|help)
+        usage
+        ;;
+    *)
+        echo "Unknown command: $cmd" >&2
+        usage
+        ;;
+esac

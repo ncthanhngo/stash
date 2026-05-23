@@ -31,6 +31,9 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSHumanReadableCopyright: "Copyright © 2026 soi"
         NSAppleEventsUsageDescription: "Clipstash uses Apple Events to paste into the active app."
+        CFBundleURLTypes:
+          - CFBundleURLName: com.soi.clipstash
+            CFBundleURLSchemes: [clipstash]
     entitlements:
       path: Clipstash/Resources/Clipstash.entitlements
       properties:
