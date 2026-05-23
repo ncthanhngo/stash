@@ -14,6 +14,8 @@ protocol ClipboardRepository: AnyObject {
     func findByHash(_ hash: String) throws -> ClipboardItem?
     func setPinnedTemplate(slot: Int, template: String?) throws
     func deleteExpired() throws -> Int
+    func recordPaste(itemID: UUID) throws
+    func topPasted(limit: Int) throws -> [ClipboardItem]
 }
 
 enum StorageError: Error, Equatable {

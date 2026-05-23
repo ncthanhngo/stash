@@ -1,9 +1,9 @@
 ---
 phase: 7
-title: "Auto-Expire Sensitive Data"
-status: pending
+title: Auto-Expire Sensitive Data
+status: completed
 priority: P1
-effort: "3h"
+effort: 3h
 dependencies: []
 ---
 

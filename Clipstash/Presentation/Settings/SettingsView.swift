@@ -6,6 +6,8 @@ struct SettingsView: View {
     @ObservedObject var exclusions: ExclusionList
     @ObservedObject var sync: PinnedFolderSync
     @ObservedObject var privacyMode: PrivacyModeState
+    let topPastedProvider: () -> [ClipboardItem]
+    @State private var topPasted: [ClipboardItem] = []
     @AppStorage("clipstash.maxItems") private var maxItems: Int = 500
     @AppStorage("clipstash.maxMB") private var maxMB: Int = 100
     @AppStorage("clipstash.autoDeleteAfterDays") private var autoDeleteAfterDays: Int = 0
@@ -20,6 +22,7 @@ struct SettingsView: View {
             generalTab.tabItem { Label("General", systemImage: "gear") }
             exclusionsTab.tabItem { Label("Exclusions", systemImage: "hand.raised") }
             syncTab.tabItem { Label("Sync", systemImage: "arrow.triangle.2.circlepath") }
+            insightsTab.tabItem { Label("Insights", systemImage: "chart.bar") }
         }
         .frame(width: 480, height: 420)
         .padding()
@@ -102,6 +105,40 @@ struct SettingsView: View {
 
     private func showOnboarding() {
         OnboardingWindowController().show()
+    }
+
+    private var insightsTab: some View {
+        Form {
+            Section("Top pasted items") {
+                if topPasted.isEmpty {
+                    Text("No paste counts yet — paste something via ⌥1..9 or click to populate.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                ForEach(topPasted) { item in
+                    HStack(spacing: 8) {
+                        Text("\(item.pasteCount)\u{00D7}")
+                            .font(.caption.monospacedDigit().weight(.semibold))
+                            .foregroundColor(.accentColor)
+                            .frame(width: 36, alignment: .trailing)
+                        Text(item.textPreview ?? "—")
+                            .font(.callout)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                        Spacer()
+                        if let slot = item.pinnedSlot {
+                            Text("⌥\(slot)")
+                                .font(.caption2.weight(.semibold))
+                                .padding(.horizontal, 4)
+                                .background(Color.accentColor.opacity(0.2))
+                                .clipShape(RoundedRectangle(cornerRadius: 3))
+                        }
+                    }
+                }
+            }
+        }
+        .formStyle(.grouped)
+        .onAppear { topPasted = topPastedProvider() }
     }
 
     private func toggleLaunchAtLogin(_ enable: Bool) {

@@ -101,6 +101,7 @@ final class ClipboardStore: ObservableObject {
     private func performPaste(_ item: ClipboardItem, mode: PasteMode) {
         do {
             try pasteEngine.paste(item, mode: mode)
+            try? repository.recordPaste(itemID: item.id)
         } catch {
             Self.log.error("paste failed: \(String(describing: error), privacy: .public)")
         }

@@ -44,6 +44,27 @@ final class GRDBClipboardRepository: ClipboardRepository {
         if affectedPinned { pinChangesSubject.send() }
     }
 
+    func recordPaste(itemID: UUID) throws {
+        let nowMs = Int64(Date().timeIntervalSince1970 * 1000)
+        try writer.write { db in
+            try db.execute(
+                sql: "UPDATE clipboard_items SET paste_count = paste_count + 1, last_pasted_at = ? WHERE id = ?",
+                arguments: [nowMs, itemID.uuidString]
+            )
+        }
+    }
+
+    func topPasted(limit: Int = 10) throws -> [ClipboardItem] {
+        try writer.read { db in
+            try ClipboardRecord
+                .filter(Column("paste_count") > 0)
+                .order(Column("paste_count").desc, Column("last_pasted_at").desc)
+                .limit(limit)
+                .fetchAll(db)
+                .compactMap { $0.toItem() }
+        }
+    }
+
     func deleteExpired() throws -> Int {
         let nowMs = Int64(Date().timeIntervalSince1970 * 1000)
         return try writer.write { db in

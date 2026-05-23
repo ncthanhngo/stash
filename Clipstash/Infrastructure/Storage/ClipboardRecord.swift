@@ -18,6 +18,8 @@ struct ClipboardRecord: FetchableRecord, PersistableRecord, Codable, Equatable {
     var pinnedSlot: Int?
     var pinnedTemplate: String?
     var expiresAt: Int64?
+    var pasteCount: Int
+    var lastPastedAt: Int64?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -34,6 +36,8 @@ struct ClipboardRecord: FetchableRecord, PersistableRecord, Codable, Equatable {
         case pinnedSlot = "pinned_slot"
         case pinnedTemplate = "pinned_template"
         case expiresAt = "expires_at"
+        case pasteCount = "paste_count"
+        case lastPastedAt = "last_pasted_at"
     }
 }
 
@@ -54,6 +58,8 @@ extension ClipboardRecord {
         self.pinnedSlot = item.pinnedSlot
         self.pinnedTemplate = item.pinnedTemplate
         self.expiresAt = item.expiresAt.map { Int64($0.timeIntervalSince1970 * 1000) }
+        self.pasteCount = item.pasteCount
+        self.lastPastedAt = item.lastPastedAt.map { Int64($0.timeIntervalSince1970 * 1000) }
     }
 
     func toItem() -> ClipboardItem? {
@@ -73,7 +79,9 @@ extension ClipboardRecord {
             isPinned: isPinned,
             pinnedSlot: pinnedSlot,
             pinnedTemplate: pinnedTemplate,
-            expiresAt: expiresAt.map { Date(timeIntervalSince1970: TimeInterval($0) / 1000) }
+            expiresAt: expiresAt.map { Date(timeIntervalSince1970: TimeInterval($0) / 1000) },
+            pasteCount: pasteCount,
+            lastPastedAt: lastPastedAt.map { Date(timeIntervalSince1970: TimeInterval($0) / 1000) }
         )
     }
 

@@ -12,6 +12,8 @@ struct ClipboardItem: Identifiable, Equatable, Sendable {
     var pinnedSlot: Int?
     var pinnedTemplate: String?
     var expiresAt: Date?
+    var pasteCount: Int
+    var lastPastedAt: Date?
 
     init(
         id: UUID = UUID(),
@@ -24,7 +26,9 @@ struct ClipboardItem: Identifiable, Equatable, Sendable {
         isPinned: Bool = false,
         pinnedSlot: Int? = nil,
         pinnedTemplate: String? = nil,
-        expiresAt: Date? = nil
+        expiresAt: Date? = nil,
+        pasteCount: Int = 0,
+        lastPastedAt: Date? = nil
     ) {
         self.id = id
         self.content = content
@@ -37,6 +41,8 @@ struct ClipboardItem: Identifiable, Equatable, Sendable {
         self.pinnedSlot = pinnedSlot
         self.pinnedTemplate = pinnedTemplate
         self.expiresAt = expiresAt
+        self.pasteCount = pasteCount
+        self.lastPastedAt = lastPastedAt
     }
 
     var kind: ContentKind { content.kind }

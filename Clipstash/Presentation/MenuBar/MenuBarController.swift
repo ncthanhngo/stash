@@ -9,9 +9,20 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
     private let settingsController: SettingsWindowController
     private let keyMonitor: PopoverKeyMonitor
 
-    init(store: ClipboardStore, exclusions: ExclusionList, sync: PinnedFolderSync, privacyMode: PrivacyModeState) {
+    init(
+        store: ClipboardStore,
+        exclusions: ExclusionList,
+        sync: PinnedFolderSync,
+        privacyMode: PrivacyModeState,
+        topPastedProvider: @escaping () -> [ClipboardItem]
+    ) {
         self.store = store
-        self.settingsController = SettingsWindowController(exclusions: exclusions, sync: sync, privacyMode: privacyMode)
+        self.settingsController = SettingsWindowController(
+            exclusions: exclusions,
+            sync: sync,
+            privacyMode: privacyMode,
+            topPastedProvider: topPastedProvider
+        )
         self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         self.keyMonitor = PopoverKeyMonitor(store: store)
 

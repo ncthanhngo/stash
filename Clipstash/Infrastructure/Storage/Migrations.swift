@@ -48,6 +48,18 @@ enum Migrations {
             """)
         }
 
+        migrator.registerMigration("v4_add_paste_count") { db in
+            try db.alter(table: "clipboard_items") { t in
+                t.add(column: "paste_count", .integer).notNull().defaults(to: 0)
+                t.add(column: "last_pasted_at", .integer)
+            }
+            try db.execute(sql: """
+                CREATE INDEX idx_items_paste_count
+                ON clipboard_items(paste_count DESC)
+                WHERE paste_count > 0
+            """)
+        }
+
         return migrator
     }
 }

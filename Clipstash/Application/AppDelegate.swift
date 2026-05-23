@@ -63,7 +63,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.pinnedFolderSync = sync
             sync.restorePersisted()
 
-            menuBarController = MenuBarController(store: store, exclusions: exclusions, sync: sync, privacyMode: privacyMode)
+            menuBarController = MenuBarController(
+                store: store,
+                exclusions: exclusions,
+                sync: sync,
+                privacyMode: privacyMode,
+                topPastedProvider: { [weak repo] in
+                    (try? repo?.topPasted(limit: 10)) ?? []
+                }
+            )
 
             let sweeper = SensitiveSweeper(repository: repo) { [weak store] _ in
                 store?.refresh()
