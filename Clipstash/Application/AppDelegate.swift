@@ -18,6 +18,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var privacyModeSubscription: AnyCancellable?
     private var sensitiveSweeper: SensitiveSweeper?
     private var urlSchemeHandler: URLSchemeHandler?
+    private var vaultStore: VaultStore?
+    private var vaultWindowController: VaultWindowController?
     private var captureSubscription: AnyCancellable?
     private var accessibilityAlertShown = false
 
@@ -86,6 +88,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     pasteEngine: engine,
                     menuBarController: menuBar
                 )
+            }
+
+            let vaultStore = VaultStore(pasteEngine: engine)
+            self.vaultStore = vaultStore
+            let vaultController = VaultWindowController(store: vaultStore)
+            vaultWindowController = vaultController
+            NotificationCenter.default.addObserver(
+                forName: .clipstashOpenVault,
+                object: nil,
+                queue: .main
+            ) { [weak vaultController] _ in
+                Task { @MainActor in vaultController?.show() }
             }
 
             captureSubscription = watcher.publisher.sink { [weak self] item in

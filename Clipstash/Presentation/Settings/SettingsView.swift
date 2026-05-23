@@ -23,9 +23,26 @@ struct SettingsView: View {
             exclusionsTab.tabItem { Label("Exclusions", systemImage: "hand.raised") }
             syncTab.tabItem { Label("Sync", systemImage: "arrow.triangle.2.circlepath") }
             insightsTab.tabItem { Label("Insights", systemImage: "chart.bar") }
+            vaultTab.tabItem { Label("Vault", systemImage: "lock.shield") }
         }
         .frame(width: 480, height: 420)
         .padding()
+    }
+
+    private var vaultTab: some View {
+        Form {
+            Section("Touch ID secure slots") {
+                Text("Open the Vault window to add, view, and paste secrets. Each paste requires Touch ID.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Button("Open Vault") { openVault() }
+            }
+        }
+        .formStyle(.grouped)
+    }
+
+    private func openVault() {
+        NotificationCenter.default.post(name: .clipstashOpenVault, object: nil)
     }
 
     private var storageTab: some View {

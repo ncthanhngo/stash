@@ -33,7 +33,7 @@ Builds on the shipped MVP (`260523-1357-macos-clipboard-manager-mvp/`). Adds 15 
 
 | Phase | Name | Status | Effort |
 |-------|------|--------|--------|
-| 1 | [CLI & URL Scheme](./phase-01-cli-url-scheme.md) | Pending | 4h |
+| 1 | [CLI & URL Scheme](./phase-01-cli-url-scheme.md) | Pending | Completed |
 | 2 | [Quick Transforms](./phase-02-quick-transforms.md) | Pending | Completed |
 | 3 | [OCR on Images](./phase-03-ocr-on-images.md) | Pending | Completed |
 | 4 | [Snippet Library](./phase-04-snippet-library.md) | Pending | 10h |

@@ -1,9 +1,9 @@
 ---
 phase: 1
-title: "CLI & URL Scheme"
-status: pending
+title: CLI & URL Scheme
+status: completed
 priority: P1
-effort: "4h"
+effort: 4h
 dependencies: []
 ---
 
