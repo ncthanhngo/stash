@@ -23,19 +23,41 @@ final class GRDBClipboardRepository: ClipboardRepository {
 
     func insert(_ item: ClipboardItem) throws {
         var affectedPinned = false
+        var enrichedItem = item
+        if enrichedItem.expiresAt == nil, !item.isPinned, case .text(let s) = item.content,
+           let kind = SensitivePatternDetector.detect(in: s)
+        {
+            enrichedItem.expiresAt = item.createdAt.addingTimeInterval(kind.defaultTTL)
+        }
         try writer.write { db in
             if let existing = try ClipboardRecord
-                .filter(Column("content_hash") == item.contentHash)
+                .filter(Column("content_hash") == enrichedItem.contentHash)
                 .filter(Column("is_pinned") == false)
                 .fetchOne(db)
             {
                 try existing.delete(db)
             }
-            try ClipboardRecord(from: item).insert(db)
-            if item.isPinned { affectedPinned = true }
+            try ClipboardRecord(from: enrichedItem).insert(db)
+            if enrichedItem.isPinned { affectedPinned = true }
             try self.evictIfNeeded(in: db)
         }
         if affectedPinned { pinChangesSubject.send() }
+    }
+
+    func deleteExpired() throws -> Int {
+        let nowMs = Int64(Date().timeIntervalSince1970 * 1000)
+        return try writer.write { db in
+            let count = try Int.fetchOne(
+                db,
+                sql: "SELECT COUNT(*) FROM clipboard_items WHERE expires_at IS NOT NULL AND expires_at < ? AND is_pinned = 0",
+                arguments: [nowMs]
+            ) ?? 0
+            try db.execute(
+                sql: "DELETE FROM clipboard_items WHERE expires_at IS NOT NULL AND expires_at < ? AND is_pinned = 0",
+                arguments: [nowMs]
+            )
+            return count
+        }
     }
 
     func recent(limit: Int = 200) throws -> [ClipboardItem] {

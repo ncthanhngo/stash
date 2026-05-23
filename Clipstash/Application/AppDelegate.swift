@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var onboardingController: OnboardingWindowController?
     private var privacyMode: PrivacyModeState?
     private var privacyModeSubscription: AnyCancellable?
+    private var sensitiveSweeper: SensitiveSweeper?
     private var captureSubscription: AnyCancellable?
     private var accessibilityAlertShown = false
 
@@ -64,6 +65,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
             menuBarController = MenuBarController(store: store, exclusions: exclusions, sync: sync, privacyMode: privacyMode)
 
+            let sweeper = SensitiveSweeper(repository: repo) { [weak store] _ in
+                store?.refresh()
+            }
+            sweeper.start()
+            sensitiveSweeper = sweeper
+
             captureSubscription = watcher.publisher.sink { [weak self] item in
                 self?.handleCaptured(item)
             }
@@ -104,6 +111,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         clipboardWatcher?.stop()
         hotkeyCenter?.unregisterAll()
         pinnedFolderSync?.disable()
+        sensitiveSweeper?.stop()
         captureSubscription?.cancel()
         clipboardWatcher = nil
         menuBarController = nil

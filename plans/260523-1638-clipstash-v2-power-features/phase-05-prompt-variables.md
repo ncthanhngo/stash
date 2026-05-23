@@ -1,10 +1,11 @@
 ---
 phase: 5
-title: "Prompt Variables"
-status: pending
+title: Prompt Variables
+status: completed
 priority: P2
-effort: "2h"
-dependencies: [4]
+effort: 2h
+dependencies:
+  - 4
 ---
 
 # Phase 5: Prompt Variables

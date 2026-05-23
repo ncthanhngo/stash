@@ -13,6 +13,7 @@ protocol ClipboardRepository: AnyObject {
     func search(query: String, limit: Int) throws -> [ClipboardItem]
     func findByHash(_ hash: String) throws -> ClipboardItem?
     func setPinnedTemplate(slot: Int, template: String?) throws
+    func deleteExpired() throws -> Int
 }
 
 enum StorageError: Error, Equatable {

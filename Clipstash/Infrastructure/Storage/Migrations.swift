@@ -37,6 +37,17 @@ enum Migrations {
             """)
         }
 
+        migrator.registerMigration("v3_add_expires_at") { db in
+            try db.alter(table: "clipboard_items") { t in
+                t.add(column: "expires_at", .integer)
+            }
+            try db.execute(sql: """
+                CREATE INDEX idx_items_expires
+                ON clipboard_items(expires_at)
+                WHERE expires_at IS NOT NULL
+            """)
+        }
+
         return migrator
     }
 }
