@@ -1,9 +1,9 @@
 ---
 phase: 9
-title: "Drag from Popover"
-status: pending
+title: Drag from Popover
+status: completed
 priority: P2
-effort: "2h"
+effort: 2h
 dependencies: []
 ---
 

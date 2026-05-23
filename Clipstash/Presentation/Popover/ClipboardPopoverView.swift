@@ -45,14 +45,22 @@ struct ClipboardPopoverView: View {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(Array(store.matches.enumerated()), id: \.element.id) { index, match in
-                            HistoryRow(item: match.item, isSelected: index == store.selectedIndex)
-                                .id(index)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    store.selectedIndex = index
-                                    store.paste(match.item)
-                                }
-                                .contextMenu { contextMenu(for: match.item) }
+                            if store.editingItemID == match.item.id {
+                                inlineEditor
+                                    .id(index)
+                            } else {
+                                HistoryRow(item: match.item, isSelected: index == store.selectedIndex)
+                                    .id(index)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture(count: 2) {
+                                        store.beginEdit(match.item)
+                                    }
+                                    .onTapGesture {
+                                        store.selectedIndex = index
+                                        store.paste(match.item)
+                                    }
+                                    .contextMenu { contextMenu(for: match.item) }
+                            }
                             Divider()
                         }
                     }
@@ -127,6 +135,27 @@ struct ClipboardPopoverView: View {
 
     private func slotLabel(_ slot: Int) -> String {
         store.pinned[slot] == nil ? "Slot \(slot)" : "Slot \(slot) (replace)"
+    }
+
+    private var inlineEditor: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            TextEditor(text: $store.editDraft)
+                .font(.body)
+                .frame(minHeight: 80, maxHeight: 200)
+                .padding(.horizontal, 8)
+            HStack(spacing: 8) {
+                Spacer()
+                Button("Cancel") { store.cancelEdit() }
+                    .keyboardShortcut(.escape)
+                Button("Save") { store.commitEdit() }
+                    .keyboardShortcut(.return, modifiers: .command)
+                    .buttonStyle(.borderedProminent)
+            }
+            .padding(.horizontal, 12)
+            .padding(.bottom, 8)
+        }
+        .padding(.top, 8)
+        .background(Color.accentColor.opacity(0.06))
     }
 
     @ViewBuilder

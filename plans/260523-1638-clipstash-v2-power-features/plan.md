@@ -41,7 +41,7 @@ Builds on the shipped MVP (`260523-1357-macos-clipboard-manager-mvp/`). Adds 15 
 | 6 | [Vault — Touch ID Secure Slots](./phase-06-vault-touch-id-secure-slots.md) | Pending | 5h |
 | 7 | [Auto-Expire Sensitive Data](./phase-07-auto-expire-sensitive-data.md) | Pending | 3h |
 | 8 | [Privacy Mode Toggle](./phase-08-privacy-mode-toggle.md) | Pending | Completed |
-| 9 | [Drag from Popover](./phase-09-drag-from-popover.md) | Pending | 2h |
+| 9 | [Drag from Popover](./phase-09-drag-from-popover.md) | Pending | Completed |
 | 10 | [Inline Text Edit](./phase-10-inline-text-edit.md) | Pending | 2h |
 | 11 | [Multi-Select Bulk Actions](./phase-11-multi-select-bulk-actions.md) | Pending | 3h |
 | 12 | [Frequency Analytics](./phase-12-frequency-analytics.md) | Pending | 3h |

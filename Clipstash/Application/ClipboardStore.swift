@@ -12,6 +12,8 @@ final class ClipboardStore: ObservableObject {
     @Published private(set) var pinned: [Int: ClipboardItem] = [:]
     @Published var query: String = ""
     @Published var selectedIndex: Int = 0
+    @Published var editingItemID: UUID? = nil
+    @Published var editDraft: String = ""
 
     var dismissPopover: (() -> Void)?
     var openSettings: (() -> Void)?
@@ -130,6 +132,40 @@ final class ClipboardStore: ObservableObject {
         } catch {
             Self.log.error("setTemplate failed: \(String(describing: error), privacy: .public)")
         }
+    }
+
+    func beginEdit(_ item: ClipboardItem) {
+        guard case .text(let s) = item.content else { return }
+        editingItemID = item.id
+        editDraft = s
+    }
+
+    func commitEdit() {
+        guard let id = editingItemID else { return }
+        defer { editingItemID = nil; editDraft = "" }
+        let trimmed = editDraft
+        guard !trimmed.isEmpty else { return }
+        let content = CapturedContent.text(trimmed)
+        let item = ClipboardItem(
+            id: id,
+            content: content,
+            contentHash: ContentHasher.hash(content),
+            sourceAppName: "Clipstash · edit"
+        )
+        do {
+            try repository.delete(itemID: id)
+            try repository.insert(item)
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(trimmed, forType: .string)
+            refresh()
+        } catch {
+            Self.log.error("commitEdit failed: \(String(describing: error), privacy: .public)")
+        }
+    }
+
+    func cancelEdit() {
+        editingItemID = nil
+        editDraft = ""
     }
 
     func extractText(from item: ClipboardItem) {
