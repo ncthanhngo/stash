@@ -4,12 +4,15 @@ import AppKit
 struct PinnedSlotsBar: View {
     @ObservedObject var store: ClipboardStore
 
+    private let columns = Array(
+        repeating: GridItem(.flexible(), spacing: 6, alignment: .top),
+        count: 3
+    )
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
-                ForEach(1...9, id: \.self) { slot in
-                    SlotChip(slot: slot, item: store.pinned[slot], store: store)
-                }
+        LazyVGrid(columns: columns, spacing: 6) {
+            ForEach(1...9, id: \.self) { slot in
+                SlotChip(slot: slot, item: store.pinned[slot], store: store)
             }
         }
         .padding(.horizontal, 12)
@@ -38,7 +41,8 @@ private struct SlotChip: View {
             contentStack
             slotBadge
         }
-        .frame(width: 64, height: 56)
+        .frame(maxWidth: .infinity)
+        .frame(height: 60)
     }
 
     @ViewBuilder
@@ -72,23 +76,26 @@ private struct SlotChip: View {
             switch item.content {
             case .text:
                 Text(displayText(item))
-                    .font(.system(size: 10, weight: .medium))
+                    .font(.system(size: 11, weight: .medium))
                     .lineLimit(3)
                     .multilineTextAlignment(.leading)
                     .truncationMode(.tail)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .padding(EdgeInsets(top: 5, leading: 5, bottom: 14, trailing: 5))
+                    .padding(EdgeInsets(top: 6, leading: 6, bottom: 16, trailing: 6))
             case .image(_, let thumb):
-                if !thumb.isEmpty, let img = NSImage(data: thumb) {
-                    Image(nsImage: img)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 60, height: 52)
-                        .clipShape(RoundedRectangle(cornerRadius: 7))
-                } else {
-                    Image(systemName: "photo")
-                        .font(.system(size: 18))
-                        .foregroundColor(.secondary)
+                GeometryReader { geo in
+                    if !thumb.isEmpty, let img = NSImage(data: thumb) {
+                        Image(nsImage: img)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: geo.size.width, height: geo.size.height)
+                            .clipShape(RoundedRectangle(cornerRadius: 7))
+                    } else {
+                        Image(systemName: "photo")
+                            .font(.system(size: 20))
+                            .foregroundColor(.secondary)
+                            .frame(width: geo.size.width, height: geo.size.height)
+                    }
                 }
             case .fileURLs(let paths):
                 VStack(spacing: 2) {

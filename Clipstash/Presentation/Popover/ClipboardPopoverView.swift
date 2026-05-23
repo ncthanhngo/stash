@@ -14,7 +14,7 @@ struct ClipboardPopoverView: View {
             Divider()
             footer
         }
-        .frame(width: 420, height: 560)
+        .frame(width: 420, height: 640)
         .onAppear { store.refresh() }
     }
 
