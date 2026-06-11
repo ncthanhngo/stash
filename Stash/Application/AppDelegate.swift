@@ -22,6 +22,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var vaultWindowController: VaultWindowController?
     private var snippetStore: SnippetStore?
     private var snippetsWindowController: SnippetsWindowController?
+    private var updater: UpdaterViewModel?
     private var captureSubscription: AnyCancellable?
     private var accessibilityAlertShown = false
 
@@ -68,11 +69,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.pinnedFolderSync = sync
             sync.restorePersisted()
 
+            let updater = UpdaterViewModel(updater: SparkleUpdater())
+            self.updater = updater
+
             menuBarController = MenuBarController(
                 store: store,
                 exclusions: exclusions,
                 sync: sync,
                 privacyMode: privacyMode,
+                updater: updater,
                 topPastedProvider: { [weak repo] in
                     (try? repo?.topPasted(limit: 10)) ?? []
                 }

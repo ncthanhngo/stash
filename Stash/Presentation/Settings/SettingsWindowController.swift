@@ -7,17 +7,20 @@ final class SettingsWindowController {
     private let exclusions: ExclusionList
     private let sync: PinnedFolderSync
     private let privacyMode: PrivacyModeState
+    private let updater: UpdaterViewModel
     private let topPastedProvider: () -> [ClipboardItem]
 
     init(
         exclusions: ExclusionList,
         sync: PinnedFolderSync,
         privacyMode: PrivacyModeState,
+        updater: UpdaterViewModel,
         topPastedProvider: @escaping () -> [ClipboardItem]
     ) {
         self.exclusions = exclusions
         self.sync = sync
         self.privacyMode = privacyMode
+        self.updater = updater
         self.topPastedProvider = topPastedProvider
     }
 
@@ -32,6 +35,7 @@ final class SettingsWindowController {
                 exclusions: exclusions,
                 sync: sync,
                 privacyMode: privacyMode,
+                updater: updater,
                 topPastedProvider: topPastedProvider
             )
         )

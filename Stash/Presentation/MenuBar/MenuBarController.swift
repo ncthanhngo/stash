@@ -14,6 +14,7 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
         exclusions: ExclusionList,
         sync: PinnedFolderSync,
         privacyMode: PrivacyModeState,
+        updater: UpdaterViewModel,
         topPastedProvider: @escaping () -> [ClipboardItem]
     ) {
         self.store = store
@@ -21,6 +22,7 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
             exclusions: exclusions,
             sync: sync,
             privacyMode: privacyMode,
+            updater: updater,
             topPastedProvider: topPastedProvider
         )
         self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)

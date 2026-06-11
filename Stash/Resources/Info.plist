@@ -37,5 +37,11 @@
 	<string>Stash uses Apple Events to paste into the active app.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2026 soi</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://github.com/ncthanhngo/stash/releases/latest/download/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>zkx2LvzfHOZJ0Z5BAcPogHdSx7ClEixTYZqTE4CC/CY=</string>
 </dict>
 </plist>

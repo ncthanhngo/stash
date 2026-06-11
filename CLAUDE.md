@@ -23,6 +23,7 @@ History (text + images), 9 pinned slots via `Option+1..9`, fuzzy search, plain-t
 | App (primary) | **Swift 5.9+ / SwiftUI** | macOS 13.0 deployment target |
 | Storage | **SQLite via GRDB.swift** | WAL mode, single file |
 | Hotkeys | **soffes/HotKey** | Carbon HotKey wrapper |
+| Auto-update | **sparkle-project/Sparkle** | MIT. Fetches appcast + downloads accepted releases only — see §7 rule 1 exception |
 | Backend (only if absolutely needed) | **Go 1.22+** | See §5 — must justify before adding |
 | Tests | XCTest | Unit + integration, no UI snapshot tests for MVP |
 
@@ -190,6 +191,7 @@ These rules are inviolable. Any code that violates them is a defect.
 
 1. **No network code.** No `URLSession`, no `Network.framework`, no sockets, nothing. Adding a `URL` literal that points to a remote host requires explicit user approval.
    - *Phase 10 exception:* writing local files into a user-chosen folder that an external client (OneDrive/iCloud Drive/Dropbox) happens to sync is plain file I/O and does NOT violate this rule. The app never speaks to the cloud directly.
+   - *Auto-update exception (user-approved):* Sparkle may reach the appcast feed (`SUFeedURL`) and download a release the user explicitly accepts. This is the ONLY outbound network the app performs. No clipboard data, history, identifiers, or telemetry are ever sent — update requests carry only what Sparkle needs to compare versions. All update networking stays inside `Infrastructure/Updates/`; nothing else in the app may open a connection.
 2. **No telemetry, no analytics, no crash reporters that phone home.** Crash logs stay local (`~/Library/Logs/Stash/`).
 3. **Never log clipboard content.** Log only: size in bytes, kind (`text|image|fileURL`), source bundle ID. Test that grep of `os.Logger` call sites never references content fields.
 4. **DB is plaintext SQLite on disk.** The user is warned in onboarding. Do not add encryption silently — it's a Phase-out-of-MVP feature.

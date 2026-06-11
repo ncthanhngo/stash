@@ -6,6 +6,7 @@ struct SettingsView: View {
     @ObservedObject var exclusions: ExclusionList
     @ObservedObject var sync: PinnedFolderSync
     @ObservedObject var privacyMode: PrivacyModeState
+    @ObservedObject var updater: UpdaterViewModel
     let topPastedProvider: () -> [ClipboardItem]
     @State private var topPasted: [ClipboardItem] = []
     @AppStorage("stash.maxItems") private var maxItems: Int = 500
@@ -24,6 +25,7 @@ struct SettingsView: View {
             syncTab.tabItem { Label("Sync", systemImage: "arrow.triangle.2.circlepath") }
             insightsTab.tabItem { Label("Insights", systemImage: "chart.bar") }
             vaultTab.tabItem { Label("Vault", systemImage: "lock.shield") }
+            UpdatesSettingsView(updater: updater).tabItem { Label("Updates", systemImage: "arrow.down.circle") }
         }
         .frame(width: 480, height: 420)
         .padding()
