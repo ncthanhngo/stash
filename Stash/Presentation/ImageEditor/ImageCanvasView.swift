@@ -13,18 +13,17 @@ struct ImageCanvasView: View {
                 AnnotationCanvas(base: viewModel.base,
                                  blurred: viewModel.blurred,
                                  imageSize: viewModel.imageSize,
+                                 displaySize: display,
                                  annotations: viewModel.annotations,
                                  draft: viewModel.draft,
                                  hiddenTextID: viewModel.editingTextID)
-                    .frame(width: viewModel.imageSize.width, height: viewModel.imageSize.height)
-                    .scaleEffect(scale, anchor: .topLeading)
-                    .frame(width: display.width, height: display.height)
 
                 cropBorder(scale: scale)
                 textField(scale: scale)
                 hint(display: display)
             }
             .frame(width: display.width, height: display.height)
+            .clipped()
             .contentShape(Rectangle())
             .gesture(drawGesture(scale: scale))
             .onContinuousHover { phase in

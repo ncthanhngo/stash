@@ -1,17 +1,24 @@
 import SwiftUI
 
 /// Pure drawing surface shared by the live editor and the export renderer.
-/// Everything is drawn in image pixel space; callers size/scale it as needed.
+/// Annotations are authored in image pixel space; the context is scaled so the
+/// whole thing renders into `displaySize` without leaking the full image size
+/// into layout (which would break scale-to-fit for large screenshots).
 struct AnnotationCanvas: View {
     let base: NSImage
     let blurred: NSImage
     let imageSize: CGSize
+    let displaySize: CGSize
     let annotations: [Annotation]
     var draft: Annotation?
     var hiddenTextID: UUID?
 
     var body: some View {
         Canvas { context, _ in
+            if imageSize.width > 0, imageSize.height > 0 {
+                context.scaleBy(x: displaySize.width / imageSize.width,
+                                y: displaySize.height / imageSize.height)
+            }
             let full = CGRect(origin: .zero, size: imageSize)
             context.draw(Image(nsImage: base), in: full)
 
@@ -22,7 +29,7 @@ struct AnnotationCanvas: View {
                 draw(draft, in: &context, full: full)
             }
         }
-        .frame(width: imageSize.width, height: imageSize.height)
+        .frame(width: displaySize.width, height: displaySize.height)
     }
 
     private func draw(_ a: Annotation, in context: inout GraphicsContext, full: CGRect) {

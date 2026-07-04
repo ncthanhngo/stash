@@ -109,6 +109,7 @@ final class ImageEditorViewModel: ObservableObject {
             base: base,
             blurred: blurred,
             imageSize: imageSize,
+            displaySize: imageSize,
             annotations: annotations.filter { $0.tool != .crop },
             draft: nil
         )
