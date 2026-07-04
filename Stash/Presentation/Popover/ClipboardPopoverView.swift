@@ -3,6 +3,7 @@ import AppKit
 
 struct ClipboardPopoverView: View {
     @ObservedObject var store: ClipboardStore
+    @State private var showClearConfirm = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -11,6 +12,8 @@ struct ClipboardPopoverView: View {
             searchField
             Divider()
             content
+            Divider()
+            PopoverHintBar(store: store)
             Divider()
             footer
         }
@@ -90,6 +93,13 @@ struct ClipboardPopoverView: View {
             Text("\(store.items.count) items")
                 .font(.caption)
                 .foregroundColor(.secondary)
+            if !store.items.isEmpty {
+                Text("·").font(.caption).foregroundColor(.secondary)
+                Button("Clear") { showClearConfirm = true }
+                    .buttonStyle(.plain)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
             Spacer()
             Button("Settings…") { store.openSettings?() }
                 .buttonStyle(.plain)
@@ -101,6 +111,16 @@ struct ClipboardPopoverView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
+        .confirmationDialog(
+            "Clear all clipboard history?",
+            isPresented: $showClearConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Clear History", role: .destructive) { store.clearHistory() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Pinned slots (⌥1–9) are kept. This cannot be undone.")
+        }
     }
 
     @ViewBuilder
@@ -126,8 +146,11 @@ struct ClipboardPopoverView: View {
             transformMenu(for: item)
             Button("Preview as code") { CodePreview.present(text: text) }
         }
-        if case .image = item.content {
+        if case .image(let data, _) = item.content {
             Divider()
+            Button("Edit image…") {
+                ImageEditor.present(pngData: data) { store.applyEditedImage($0) }
+            }
             Button("Extract text (OCR)") { store.extractText(from: item) }
         }
         Divider()

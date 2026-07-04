@@ -1,4 +1,5 @@
 import AppKit
+import Carbon.HIToolbox
 import os
 
 private enum VirtualKey {
@@ -39,12 +40,31 @@ final class SystemPasteEngine: PasteEngine {
         write(item, mode: mode)
         let postWriteCount = pasteboard.changeCount
 
+        try preflight()
         try simulateCmdV()
 
         if let snapshot {
             DispatchQueue.main.asyncAfter(deadline: .now() + restoreDelay) { [weak self] in
                 self?.restoreIfUnchanged(snapshot, expectingChangeCount: postWriteCount)
             }
+        }
+    }
+
+    /// Pre-flight checks every reason we'd want to abort a paste. The pasteboard
+    /// is already written at this point, so the user can fall back to manual ⌘V.
+    private func preflight() throws {
+        if IsSecureEventInputEnabled() {
+            Self.log.info("secure input active — leaving content on pasteboard")
+            throw PasteError.secureInputActive
+        }
+        if !AccessibilityPermission.isTrusted() {
+            Self.log.error("accessibility revoked at paste time — leaving content on pasteboard")
+            throw PasteError.accessibilityRevoked
+        }
+        let frontmost = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
+        if frontmost == Bundle.main.bundleIdentifier {
+            Self.log.info("frontmost is Stash — refusing to paste into self")
+            throw PasteError.frontmostIsSelf
         }
     }
 
@@ -64,6 +84,7 @@ final class SystemPasteEngine: PasteEngine {
         pasteboard.setString(result.text, forType: .string)
         let postWriteCount = pasteboard.changeCount
 
+        try preflight()
         try simulateCmdV()
 
         if result.cursorOffsetFromEnd > 0 {

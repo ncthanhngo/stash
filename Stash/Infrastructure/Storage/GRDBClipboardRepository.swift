@@ -7,18 +7,38 @@ final class GRDBClipboardRepository: ClipboardRepository {
     private static let log = Logger(subsystem: "com.soi.stash", category: "storage")
 
     private let writer: any DatabaseWriter
-    private let settings: StorageSettings
+    private let settingsProvider: @Sendable () -> StorageSettings
+    private let dbURL: URL?
     private let pinChangesSubject = PassthroughSubject<Void, Never>()
 
     var pinChanges: AnyPublisher<Void, Never> { pinChangesSubject.eraseToAnyPublisher() }
 
-    init(writer: any DatabaseWriter, settings: StorageSettings = .defaults) {
+    private var settings: StorageSettings { settingsProvider() }
+
+    init(
+        writer: any DatabaseWriter,
+        settingsProvider: @escaping @Sendable () -> StorageSettings = { .defaults },
+        dbURL: URL? = nil
+    ) {
         self.writer = writer
-        self.settings = settings
+        self.settingsProvider = settingsProvider
+        self.dbURL = dbURL
+    }
+
+    convenience init(writer: any DatabaseWriter, settings: StorageSettings = .defaults) {
+        self.init(writer: writer, settingsProvider: { settings })
+    }
+
+    convenience init(
+        dbPool: DatabasePool,
+        settingsProvider: @escaping @Sendable () -> StorageSettings,
+        dbURL: URL? = nil
+    ) {
+        self.init(writer: dbPool, settingsProvider: settingsProvider, dbURL: dbURL)
     }
 
     convenience init(dbPool: DatabasePool, settings: StorageSettings = .defaults) {
-        self.init(writer: dbPool, settings: settings)
+        self.init(writer: dbPool, settingsProvider: { settings })
     }
 
     func insert(_ item: ClipboardItem) throws {
@@ -140,6 +160,13 @@ final class GRDBClipboardRepository: ClipboardRepository {
         if deletedPinned { pinChangesSubject.send() }
     }
 
+    func clearHistory() throws {
+        // Pinned slots carry is_pinned = 1, so they survive this wipe.
+        try writer.write { db in
+            try db.execute(sql: "DELETE FROM clipboard_items WHERE is_pinned = 0")
+        }
+    }
+
     func search(query: String, limit: Int = 200) throws -> [ClipboardItem] {
         guard !query.isEmpty else { return try recent(limit: limit) }
         let like = "%\(query)%"
@@ -173,6 +200,46 @@ final class GRDBClipboardRepository: ClipboardRepository {
             )
         }
         pinChangesSubject.send()
+    }
+
+    func applyLimitsNow() throws {
+        try writer.write { db in
+            try self.evictIfNeeded(in: db)
+        }
+    }
+
+    func backupSQLite() throws -> Data {
+        // Force a checkpoint so the on-disk file is consistent, then read it.
+        try writer.write { db in
+            try db.checkpoint()
+        }
+        guard let url = dbURL else {
+            throw NSError(
+                domain: "GRDBClipboardRepository",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Backup unavailable: in-memory database"]
+            )
+        }
+        return try Data(contentsOf: url)
+    }
+
+    func restoreSQLite(from data: Data) throws {
+        guard let url = dbURL else {
+            throw NSError(
+                domain: "GRDBClipboardRepository",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Restore unavailable: in-memory database"]
+            )
+        }
+        // Wipe existing rows in the live connection, then overwrite the file.
+        try writer.write { db in
+            try db.execute(sql: "DELETE FROM clipboard_items")
+        }
+        try data.write(to: url, options: .atomic)
+        // GRDB caches the schema; force a re-open by VACUUMing.
+        try writer.write { db in
+            try db.execute(sql: "VACUUM")
+        }
     }
 
     private func evictIfNeeded(in db: Database) throws {

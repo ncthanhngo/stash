@@ -18,6 +18,7 @@ final class ClipboardStore: ObservableObject {
 
     var dismissPopover: (() -> Void)?
     var openSettings: (() -> Void)?
+    var requestImmediateCapture: (() -> Void)?
 
     var stickyPopover: Bool {
         UserDefaults.standard.bool(forKey: "stash.stickyPopover")
@@ -154,6 +155,26 @@ final class ClipboardStore: ObservableObject {
         do {
             try pasteEngine.paste(item, mode: mode)
             try? repository.recordPaste(itemID: item.id)
+        } catch PasteError.secureInputActive {
+            try? repository.recordPaste(itemID: item.id)
+            HUDToast.show(
+                headline: "⌘V to paste",
+                caption: "password field blocks auto-paste",
+                kind: .warning
+            )
+        } catch PasteError.accessibilityRevoked {
+            try? repository.recordPaste(itemID: item.id)
+            HUDToast.show(
+                headline: "Lost Accessibility",
+                caption: "re-grant in System Settings",
+                kind: .warning
+            )
+        } catch PasteError.frontmostIsSelf {
+            HUDToast.show(
+                headline: "Popover blocked paste",
+                caption: "try again — Stash was still focused",
+                kind: .info
+            )
         } catch {
             Self.log.error("paste failed: \(String(describing: error), privacy: .public)")
         }
@@ -176,6 +197,17 @@ final class ClipboardStore: ObservableObject {
     func delete(_ item: ClipboardItem) {
         try? repository.delete(itemID: item.id)
         refresh()
+    }
+
+    func clearHistory() {
+        do {
+            try repository.clearHistory()
+            selectedIDs.removeAll()
+            query = ""
+            refresh()
+        } catch {
+            Self.log.error("clearHistory failed: \(String(describing: error), privacy: .public)")
+        }
     }
 
     func setTemplate(slot: Int, template: String?) {
@@ -219,6 +251,14 @@ final class ClipboardStore: ObservableObject {
     func cancelEdit() {
         editingItemID = nil
         editDraft = ""
+    }
+
+    /// Puts the annotated screenshot on the pasteboard and lets the capture path
+    /// pick it up — that rebuilds the thumbnail and inserts it as a new history item.
+    func applyEditedImage(_ png: Data) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setData(png, forType: .png)
+        requestImmediateCapture?()
     }
 
     func extractText(from item: ClipboardItem) {

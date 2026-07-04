@@ -67,6 +67,22 @@ final class ClipboardWatcher {
         suppressedChangeCount = pasteboard.changeCount + 1
     }
 
+    /// Forces an immediate capture instead of waiting for the next poll — used
+    /// right after a user-initiated screenshot lands on the pasteboard. Skips the
+    /// frontmost-app privacy filter because the action is explicit, but still
+    /// no-ops when the pasteboard did not change (e.g. the crop was cancelled).
+    @discardableResult
+    func captureNow() -> Bool {
+        let current = pasteboard.changeCount
+        guard current != lastChangeCount else { return false }
+        lastChangeCount = current
+        suppressedChangeCount = nil
+        captureQueue.async { [weak self] in
+            self?.capture(at: current)
+        }
+        return true
+    }
+
     private func tick() {
         guard !pauseProvider() else { return }
         let current = pasteboard.changeCount

@@ -36,8 +36,7 @@ final class KeychainVault {
         }
     }
 
-    func reveal(id: UUID, reason: String) throws -> Data {
-        let context = LAContext()
+    func reveal(id: UUID, reason: String, context: LAContext = LAContext()) throws -> Data {
         context.localizedReason = reason
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,

@@ -16,6 +16,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var onboardingController: OnboardingWindowController?
     private var privacyMode: PrivacyModeState?
     private var privacyModeSubscription: AnyCancellable?
+    private var hotkeyBindings: HotkeyBindings?
+    private var hotkeyBindingsSubscription: AnyCancellable?
+    private var storageDefaultsSubscription: AnyCancellable?
+    private var vaultLockSubscriptions: Set<AnyCancellable> = []
     private var sensitiveSweeper: SensitiveSweeper?
     private var urlSchemeHandler: URLSchemeHandler?
     private var vaultStore: VaultStore?
@@ -37,15 +41,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let privacyMode = PrivacyModeState()
             self.privacyMode = privacyMode
 
+            let hotkeyBindings = HotkeyBindings()
+            self.hotkeyBindings = hotkeyBindings
+
             let defaults = UserDefaults.standard
-            let storedItems = defaults.integer(forKey: "stash.maxItems")
-            let storedMB = defaults.integer(forKey: "stash.maxMB")
-            let storageSettings = StorageSettings(
-                maxItems: storedItems > 0 ? storedItems : 500,
-                maxBytes: (storedMB > 0 ? storedMB : 100) * 1024 * 1024,
-                autoDeleteAfterDays: defaults.integer(forKey: "stash.autoDeleteAfterDays")
+            let settingsProvider: @Sendable () -> StorageSettings = {
+                let d = UserDefaults.standard
+                let items = d.integer(forKey: "stash.maxItems")
+                let mb = d.integer(forKey: "stash.maxMB")
+                return StorageSettings(
+                    maxItems: items > 0 ? items : 500,
+                    maxBytes: (mb > 0 ? mb : 100) * 1024 * 1024,
+                    autoDeleteAfterDays: d.integer(forKey: "stash.autoDeleteAfterDays")
+                )
+            }
+            let repo = GRDBClipboardRepository(
+                dbPool: pool,
+                settingsProvider: settingsProvider,
+                dbURL: DatabaseFactory.defaultURL
             )
-            let repo = GRDBClipboardRepository(dbPool: pool, settings: storageSettings)
             self.repository = repo
 
             let watcher = ClipboardWatcher(
@@ -63,7 +77,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             pasteEngine = engine
 
             let store = ClipboardStore(repository: repo, pasteEngine: engine)
+            store.requestImmediateCapture = { [weak self] in
+                self?.clipboardWatcher?.captureNow()
+            }
             self.store = store
+
+            let portability = HistoryPortabilityService(repository: repo, store: store)
 
             let sync = PinnedFolderSync(repository: repo, exclusions: exclusions)
             self.pinnedFolderSync = sync
@@ -77,7 +96,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 exclusions: exclusions,
                 sync: sync,
                 privacyMode: privacyMode,
+                hotkeyBindings: hotkeyBindings,
                 updater: updater,
+                portability: portability,
+                onTogglePause: { [weak self] in
+                    Task { @MainActor in self?.togglePrivacyMode() }
+                },
                 topPastedProvider: { [weak repo] in
                     (try? repo?.topPasted(limit: 10)) ?? []
                 }
@@ -99,6 +123,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
             let vaultStore = VaultStore(pasteEngine: engine)
             self.vaultStore = vaultStore
+
+            // Lock the vault on app deactivate, screen sleep, and explicit user lock.
+            let nc = NotificationCenter.default
+            let ws = NSWorkspace.shared.notificationCenter
+            nc.publisher(for: NSApplication.didResignActiveNotification)
+                .sink { [weak vaultStore] _ in vaultStore?.lock() }
+                .store(in: &vaultLockSubscriptions)
+            ws.publisher(for: NSWorkspace.screensDidSleepNotification)
+                .sink { [weak vaultStore] _ in vaultStore?.lock() }
+                .store(in: &vaultLockSubscriptions)
+            ws.publisher(for: NSWorkspace.willSleepNotification)
+                .sink { [weak vaultStore] _ in vaultStore?.lock() }
+                .store(in: &vaultLockSubscriptions)
             let vaultController = VaultWindowController(store: vaultStore)
             vaultWindowController = vaultController
             NotificationCenter.default.addObserver(
@@ -130,31 +167,42 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let center = HotkeyCenter { [weak self] action in
                 Task { @MainActor in self?.handle(action: action) }
             }
-            center.registerDefaults()
+            center.apply(hotkeyBindings)
             hotkeyCenter = center
 
-            verifyAccessibility()
+            hotkeyBindingsSubscription = hotkeyBindings.$bindings
+                .dropFirst()
+                .sink { [weak center, weak hotkeyBindings] _ in
+                    guard let hotkeyBindings else { return }
+                    center?.apply(hotkeyBindings)
+                }
+
+            storageDefaultsSubscription = NotificationCenter.default
+                .publisher(for: UserDefaults.didChangeNotification)
+                .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+                .sink { [weak repo, weak store] _ in
+                    try? repo?.applyLimitsNow()
+                    Task { @MainActor in store?.refresh() }
+                }
+
+            runOnboardingIfNeeded()
         } catch {
             Self.log.error("startup failed: \(String(describing: error), privacy: .public)")
         }
     }
 
     @MainActor
-    private func verifyAccessibility() {
+    private func runOnboardingIfNeeded() {
         let onboarding = OnboardingWindowController()
         onboardingController = onboarding
 
-        if !onboarding.hasShownBefore {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                self?.onboardingController?.show()
-            }
-            return
-        }
-
-        AccessibilityPermission.requestIfNeeded()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            guard !AccessibilityPermission.isTrusted() else { return }
-            AccessibilityPrompt.showRequiredAlert()
+        let mode = OnboardingCoordinator.decide(
+            accessibilityTrusted: AccessibilityPermission.isTrusted(),
+            hasShownBefore: onboarding.hasShownBefore
+        )
+        guard let mode else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.onboardingController?.show(mode: mode)
         }
     }
 
@@ -171,6 +219,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         pinnedFolderSync?.disable()
         sensitiveSweeper?.stop()
         captureSubscription?.cancel()
+        hotkeyBindingsSubscription?.cancel()
+        storageDefaultsSubscription?.cancel()
+        vaultLockSubscriptions.forEach { $0.cancel() }
+        vaultLockSubscriptions.removeAll()
         clipboardWatcher = nil
         menuBarController = nil
         repository = nil
@@ -179,6 +231,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         store = nil
         exclusions = nil
         pinnedFolderSync = nil
+        hotkeyBindings = nil
+        updater = nil
     }
 
     private func handleCaptured(_ item: ClipboardItem) {
@@ -205,7 +259,36 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         case .togglePrivacyMode:
             togglePrivacyMode()
         case .captureScreenshotCrop:
-            ScreenshotService.captureInteractiveCrop()
+            ScreenshotService.captureInteractiveCrop { [weak self] in
+                self?.finishScreenshotCapture()
+            }
+        }
+    }
+
+    /// Runs on the main queue once screencapture exits: captures the shot into history
+    /// and surfaces a toast whose "Edit" chip opens the annotation editor on the shot.
+    private func finishScreenshotCapture() {
+        guard clipboardWatcher?.captureNow() == true else { return }
+        let png = NSPasteboard.general.data(forType: .png)
+            ?? NSPasteboard.general.data(forType: .tiff)
+        let action = png.map { data in
+            HUDToast.Action(title: "Edit") { [weak self] in
+                Task { @MainActor in self?.presentScreenshotEditor(pngData: data) }
+            }
+        }
+        HUDToast.show(
+            headline: "Screenshot captured",
+            caption: action == nil ? nil : "Saved to history",
+            kind: .info,
+            duration: 4,
+            action: action
+        )
+    }
+
+    @MainActor
+    private func presentScreenshotEditor(pngData: Data) {
+        ImageEditor.present(pngData: pngData) { [weak self] edited in
+            self?.store?.applyEditedImage(edited)
         }
     }
 
@@ -214,10 +297,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard let privacyMode else { return }
         privacyMode.isPaused.toggle()
         let kind: HUDToast.Kind = privacyMode.isPaused ? .warning : .info
-        let text = privacyMode.isPaused
-            ? "Capture paused — copying anything won't save"
-            : "Capture resumed"
-        HUDToast.show(text, kind: kind, duration: 1.8)
+        let headline = privacyMode.isPaused ? "Capture paused" : "Capture resumed"
+        let caption: String? = privacyMode.isPaused ? "nothing new will be saved" : nil
+        HUDToast.show(headline: headline, caption: caption, kind: kind, duration: 1.8)
         menuBarController?.updatePrivacyIcon(paused: privacyMode.isPaused)
     }
 
@@ -256,9 +338,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } catch PasteError.accessibilityDenied {
             Self.log.error("paste blocked: accessibility denied")
             HUDToast.show(
-                "Copied to clipboard — press Cmd+V (auto-paste needs Accessibility)",
+                headline: "⌘V to paste slot \(slot)",
+                caption: "Accessibility needed for auto-paste",
                 kind: .warning,
-                duration: 2.6
+                action: HUDToast.Action(title: "Open Settings") {
+                    AccessibilityPrompt.openSettings()
+                }
             )
             if !accessibilityAlertShown {
                 accessibilityAlertShown = true
@@ -266,6 +351,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     AccessibilityPrompt.showRequiredAlert()
                 }
             }
+        } catch PasteError.secureInputActive {
+            Self.log.info("paste blocked: secure input active (slot \(slot, privacy: .public))")
+            HUDToast.show(
+                headline: "⌘V to paste slot \(slot)",
+                caption: "password field blocks auto-paste",
+                kind: .warning
+            )
+        } catch PasteError.accessibilityRevoked {
+            Self.log.error("paste blocked: accessibility revoked since launch")
+            HUDToast.show(
+                headline: "Lost Accessibility",
+                caption: "re-grant in System Settings",
+                kind: .warning,
+                action: HUDToast.Action(title: "Open Settings") {
+                    AccessibilityPrompt.openSettings()
+                }
+            )
+        } catch PasteError.frontmostIsSelf {
+            Self.log.info("paste blocked: frontmost is Stash itself")
+            HUDToast.show(
+                headline: "Popover blocked paste",
+                caption: "try the hotkey again — Stash was still focused",
+                kind: .info
+            )
         } catch {
             Self.log.error("paste slot \(slot, privacy: .public) failed: \(String(describing: error), privacy: .public)")
             HUDToast.show("Paste failed", kind: .error)

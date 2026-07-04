@@ -2,52 +2,43 @@ import AppKit
 import HotKey
 import os
 
+@MainActor
 final class HotkeyCenter {
     private static let log = Logger(subsystem: "com.soi.stash", category: "hotkeys")
 
     private let handler: (HotkeyAction) -> Void
-    private var hotKeys: [HotKey] = []
+    private var hotKeys: [HotkeyAction: HotKey] = [:]
+    private(set) var failedToRegister: Set<HotkeyAction> = []
 
     init(handler: @escaping (HotkeyAction) -> Void) {
         self.handler = handler
     }
 
-    func registerDefaults() {
+    /// Re-register every customisable hotkey from the current bindings.
+    /// Safe to call repeatedly when the user edits a combo in Settings.
+    func apply(_ bindings: HotkeyBindings) {
         unregisterAll()
-        let slotKeys: [Key] = [.one, .two, .three, .four, .five, .six, .seven, .eight, .nine]
-        for (index, key) in slotKeys.enumerated() {
-            let slot = index + 1
-            let hk = HotKey(key: key, modifiers: .option)
-            hk.keyDownHandler = { [weak self] in
-                self?.handler(.pasteSlot(slot))
-            }
-            hotKeys.append(hk)
+        for action in HotkeyAction.allCustomisable {
+            register(action, combo: bindings.combo(for: action))
         }
-
-        let plain = HotKey(key: .v, modifiers: [.command, .shift])
-        plain.keyDownHandler = { [weak self] in self?.handler(.pasteLatestPlainText) }
-        hotKeys.append(plain)
-
-        let toggle = HotKey(key: .c, modifiers: [.command, .shift])
-        toggle.keyDownHandler = { [weak self] in self?.handler(.togglePopover) }
-        hotKeys.append(toggle)
-
-        let togglePopoverAlt = HotKey(key: .v, modifiers: [.command, .shift, .option])
-        togglePopoverAlt.keyDownHandler = { [weak self] in self?.handler(.togglePopover) }
-        hotKeys.append(togglePopoverAlt)
-
-        let privacy = HotKey(key: .p, modifiers: [.command, .shift, .option])
-        privacy.keyDownHandler = { [weak self] in self?.handler(.togglePrivacyMode) }
-        hotKeys.append(privacy)
-
-        let crop = HotKey(key: .s, modifiers: [.command, .shift])
-        crop.keyDownHandler = { [weak self] in self?.handler(.captureScreenshotCrop) }
-        hotKeys.append(crop)
-
-        Self.log.info("registered \(self.hotKeys.count, privacy: .public) hotkeys")
+        Self.log.info("registered \(self.hotKeys.count, privacy: .public) hotkeys; failed=\(self.failedToRegister.count, privacy: .public)")
     }
 
     func unregisterAll() {
         hotKeys.removeAll()
+        failedToRegister.removeAll()
+    }
+
+    private func register(_ action: HotkeyAction, combo: KeyCombo) {
+        guard !combo.isDisabled else { return }
+        guard let key = Key(carbonKeyCode: combo.keyCode) else {
+            Self.log.error("invalid carbon keyCode=\(combo.keyCode, privacy: .public) for \(action.storageKey, privacy: .public)")
+            failedToRegister.insert(action)
+            return
+        }
+        let mods = NSEvent.ModifierFlags(rawValue: combo.modifierFlagsRaw)
+        let hk = HotKey(key: key, modifiers: mods)
+        hk.keyDownHandler = { [weak self] in self?.handler(action) }
+        hotKeys[action] = hk
     }
 }
